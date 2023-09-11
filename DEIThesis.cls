@@ -35,7 +35,7 @@
 % language, font and encodings
 \RequirePackage{newpxtext,newpxmath}
 \RequirePackage[T1]{fontenc}
-\RequirePackage[english]{babel}
+\RequirePackage[italian]{babel}
 
 
 
@@ -448,6 +448,8 @@
 % -- MAIN MATTER --
 
 \renewcommand{\mainmatter} {
+  \graphicspath{ {img/} }
+
   \cleardoublepage
 
   % reset page counter
