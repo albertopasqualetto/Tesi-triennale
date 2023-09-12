@@ -57,10 +57,11 @@
 
 % mathematics
 \RequirePackage{amsmath}
+\RequirePackage{siunitx}
 
 % links
 \RequirePackage{hyperref}
-\RequirePackage{url}
+% \RequirePackage{url}
 
 % colors
 \RequirePackage{color}
@@ -77,7 +78,7 @@
 
 % plots, drawings etc...
 \RequirePackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 
 % references
 \RequirePackage[autostyle]{csquotes}

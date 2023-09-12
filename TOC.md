@@ -2,7 +2,7 @@
 
 ## Fedeltà e filologia
 
-## Digitalizzazione Manuale vs automatizzazione
+## Digitalizzazione manuale vs automatizzazione
 
 ### Centro di sonologia computazionale e suo Metodo di digitalizzazione, specializzazione su open reel tapes
 
