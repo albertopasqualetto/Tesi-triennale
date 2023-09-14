@@ -83,6 +83,7 @@
 % references
 \RequirePackage[autostyle]{csquotes}
 \RequirePackage[backend=biber]{biblatex}
+\renewcommand\multicitedelim{\addsemicolon\space}
 \addbibresource{references.bib}
 
 
@@ -405,6 +406,8 @@
   \chapter*{\listacronymname}
   \input{frontmatter/glossary}
   \cleardoublepage
+
+  \acresetall
 }
 
 
