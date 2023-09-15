@@ -1,4 +1,57 @@
 %!TEX root = ../main.tex
 
-\chapter{Conformance Testing} \label{chp:conformancetesting}
+\chapter{Conformance Testing} \label{chp:conformancetesting}    % a che serve, con specifica ambiente di sviluppo (python, poetry, git, gitlab DEI)
+I test di conformità, come anticipato nella sezione \ref{sec:standard-mpai}, sono un insieme di attività di verifica che determinano l'aderenza di un processo, prodotto o servizio a dei requisiti tecnici o a delle norme.
+Nel caso in esame, \ac{ARP}, si tratta di verificare che il suo funzionamento segua, entro certi limiti (necessari anche perchè è una IA), le specifiche tecniche. In \ac{MPAI}, questi test, sono definiti all'interno di un documento apposito.
 
+L'obiettivo di questa tesi è quella di scrivere il codice dei test di conformità, basandosi sul documento che li descrive fornito da MPAI.
+
+L'ambiente di sviluppo è un ambiente virtuale di \href{https://python-poetry.org/}{Poetry} basato su Python 3.10 (poi aggiornato a 3.11)\footnote{Vedi sezione \ref{ssec:py-311}}, su una macchina Windows 11 (per alcuni confronti, occasionalmente è stata utilizzata una macchina virtuale con Ubuntu 20.04.6 LTS). L'ambiente di produzione è un server Docker.\footnote{Per questo motivo l'implementazione del CSC ha anche una modalità di esecuzione come server con protocollo gRPC, utilizzato per fare comunicare i vari \acp{AIM} tra loro.} Per il versionamento del software viene usato \href{https://git-scm.com/}{git}, utilizzando come server il \href{https://gitlab.dei.unipd.it/}{GitLab del \ac{DEI}}.
+
+
+\section{Tests e \acl{TDD}} \label{sec:tests-tdd}
+Il software testing è il processo di valutazione e verifica del corretto funzionamento di un prodotto software rispetto alle aspettative; la creazione di test suites ha l'obiettivo di rilevare bug prima di rilasciare il prodotto.
+Solitamente si tende ad automatizzare i test attraverso alcuni framework in modo tale da poterli eseguire ad ogni modifica del codice.
+
+Il \acfi{TDD} è un approccio allo sviluppo di software che prevede la scrittura dei test prima di quella del codice ai quali deve esserne sottoposto; inoltre i test sono da ripetere man mano che il software viene sviluppato.
+I test di conformità sono il documento ed i test stessi che l'implementazione software delle specifiche tecniche dovranno rispettare, quindi la loro scrittura e comunque una correzione del codice basandosi su di essi può essere riconosciuta come un approccio di \ac{TDD}. % TODO vedere se dare più importanza
+
+
+\subsection{Pytest} \label{ssec:pytest} % funzionamento/utlità, xdist per parallelizzare, json-report per scrivere il report richiesto, fixtures per eseguire funzione per ogni file
+Uno dei framework per il testing in Python più popolari è \href{https://pytest.org}{pytest}, esso permette di ottenere informazioni dettagliate sul fallimento degli \texttt{assert} statements\footnote{\texttt{assert} è la parola chiave che permette di effettuare i test, nello specifico il test procede se i suoi parametri sono \texttt{True}, mentre viene lanciato \texttt{AssertionError} se i suoi parametri sono \texttt{False}.}, di avere fixtures\footnote{Una \textit{fixture} è un elemento del software testing che viene utilizzato per definire un contesto per l'esecuzione di uno (o più) test.} modulari e di essere compatibile con numerosi plugin esterni.
+
+\href{https://github.com/numirias/pytest-json-report}{pytest-json-report} è un plugin che è stato utilizzato per creare i report richiesti come output del conformance testing in formato JSON.
+
+\href{https://pytest-xdist.readthedocs.io/}{pytest-xdist} è un plugin che è stato utilizzato per parallelizzare l'esecuzione (vedi sezione \ref{sec:parallelizzazione}
+
+Sono state utilizzate delle fixture per definire l'ambiente di test e per ottenere delle cartelle di test (\verb|pytest_sessionstart|, \verb|pytest_sessionfinish| e \verb|tmp_path|), inoltre è stata parametrizzata l'esecuzione delle varie funzioni di test in modo tale da essere eseguite per ogni documento digitalizzato tramite il decoratore \texttt{@pytest.mark.parametrize}.
+
+
+\section{\acs{CAE}-\acs{ARP} packager} \label{sec:test-packager}
+Il primo \ac{AIM} preso in esame è stato il packager.
+
+
+
+
+
+
+
+
+
+
+\subsection{Bug ed altri problemi pre-esistenti}    % moviepy vs ffmpeg (errori nel video e audio transcodifica in mp3), offset
+\subsection{Come verificare uguaglianza tra video}  % ffmpeg e psnr
+\subsection{Come verificare uguaglianza tra audio}  % fingerprinting con chromaprint, suo wrapper in python, open source software e mie contribuzioni, comunicare col mantainer
+\subsection{Pulizia/reformat del codice della libreria} % principio DRY, docstrings, unit tests, compatiblità Windows ma esecuzione docker
+\section{\acs{CAE}-\acs{ARP} audio analyser}
+\subsection{Problemi pre-esistenti} % uso alias di pydantic ambiguo, typos, video analyser usa : invece di . e workaround, in Windows scipy.signal.correlate da overflow perche tipo di default per numpy è int32, test non funzionanti
+\subsection{Come verificare che l'offset scelto è abbastanza vicino a quello reale} % formula fornita + ffprobe
+\subsection{Come verificare che i file siano wav}   % RF64 ma in realtà va bene wav; libreria filetype, magic numbers, MIME
+\subsection{Come verificare che la classificazione sia corretta}    % non necessario ma utile per capire che l'IA non da sempre stessi risultati, output utilizzati per gli altri test, recall, precision
+\section{Parallelizzare o no? confronto di velocità} \label{sec:parallelizzazione}
+\section{Libreria \texttt{mpai-cae-arp}}    % a cosa serve
+\subsection{Bug: aggiornamento pydantic}    % che ha portato a dover aggiornare i moduli
+\subsection{Bug: formatting sbagliato delle EditingList scritte su file}
+\subsection{Bug: test di \texttt{AudioWave} a singolo canale non funzionante e fix di \texttt{get\_channel}}
+\subsection{Aggiornamento delle librerie perchè cross-dependencies ora supportate (librosa, llvmlite, numpy)}
+\subsection{Aggiornamento a Python 3.11} \label{ssec:py-311}

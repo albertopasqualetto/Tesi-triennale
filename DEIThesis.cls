@@ -54,6 +54,13 @@
 % footnotes
 \RequirePackage{footnote}
 \RequirePackage[bottom]{footmisc}
+\newcommand{\mpfootnotes}[1][1]{
+  \renewcommand{\thempfootnote}{\thefootnote}
+  \addtocounter{footnote}{-1}
+  \addtocounter{footnote}{#1}
+  \renewcommand{\footnote}{\stepcounter{footnote}\footnotetext[\value{footnote}]}
+}
+\interfootnotelinepenalty=10000
 
 % mathematics
 \RequirePackage{amsmath}
