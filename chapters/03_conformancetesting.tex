@@ -30,18 +30,173 @@ Sono state utilizzate delle fixture per definire l'ambiente di test e per ottene
 \section{\acs{CAE}-\acs{ARP} packager} \label{sec:test-packager}
 Il primo \ac{AIM} preso in esame è stato il packager.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{packager.png}
+    \caption{\ac{ARP} Packager}
+    \label{fig:packager}
+\end{figure}
 
+% \begin{table}[h]
+%     \centering
+%     \begin{tabular}{|c|c|}
+%         \hline
+%         \textbf{Input data}             &   \textbf{Output Data}\\
+%         \hline
+%         Preservation Audio File         &   Access Copy Files\\
+%         Preservation Audio-Visual File  &   Preservation Master Files\\
+%         Restored Audio Files            &   \\
+%         Editing List                    &   \\
+%         Irregularity File               &   \\
+%         Irregularity Images             &   \\
+%         \hline
+%     \end{tabular}
+%     \caption{I/O di \ac{ARP} Packager}
+%     \label{tab:packager-io}
+% \end{table}
 
+Il packager, come anticipato nella sottosezione \ref{ssec:mpai-cae-arp}, è l'ultimo \ac{AIM} ad essere eseguito e si occupa di raccogliere tutti i file elaborati e di restituire in uscita all'\ac{AIW} una cartella con la copia d'accesso dei file ed una con i file grezzi accompagnati da tutte le irregolarità trovate, vedi schema in figura \ref{fig:packager}.
 
+Viene riportata la descrizione dei conformance tests da seguire, definita da MPAI, nella tabella \ref{tab:packager-valutazione}.\footnote{Estratta dalla versione WD 0.15.2 del documento MPAI Conformance Testing per \ac{CAE}.} 
 
-
-
-
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|p{0.2\textwidth}|p{0.8\textwidth}|}
+        \hline
+        \textbf{Means}   &   \textbf{Actions}\\
+        \hline
+        \textbf{Conformance Testing Dataset}    &
+            DS1: n Preservation Audio Files.\newline
+            DS2: n Preservation Audio-Visual Files related to DS1.\newline
+            DS3: n Restored Audio Files arrays related to DS1 coming from Tape Audio Restoration.\newline
+            DS4: n Editing Lists related to DS3 coming from Tape Audio Restoration.\newline
+            DS5: n Irregularity Files related to DS1 coming from Tape Irregularity Classifier.\newline
+            DS6: n Irregularity Images related to DS5 coming from Tape Irregularity Classifier.\newline
+            DS7: n Access Copy Files.\newline
+            DS8: n Preservation Master Files.\\
+        \hline
+        \textbf{Procedure}  &
+            1.	Feed Packager under test with DS1, DS2, DS3, DS4, DS5 and DS6.\newline
+            2.	Compare the output Access Copy Files with DS7.\newline
+            3.	Compare the output Preservation Master Files with DS8.\\
+        \hline
+        \textbf{Evaluation} &
+            For a given input tuple, verify that:\newline
+                1.	The output Access Copy Files contain the Restored Audio Files, the Editing List, the Irregularity File and the set of Irregularity Images in a .zip file, and is therefore equal to DS7.\newline
+                2.	The output Preservation Master Files contain the Preservation Audio File, the Preservation Audio-Visual File with the audio of the Preservation Audio File, the Irregularity File and the Irregularity Images, and is therefore equal to DS8.\newline
+            An error on any of the output arrays will make the Packager under test not conformant.\\
+        \hline
+    \end{tabular}
+    \caption{Test di conformità per \ac{ARP} Packager}
+    \label{tab:packager-valutazione}
+\end{table}
 
 
 \subsection{Bug ed altri problemi pre-esistenti}    % moviepy vs ffmpeg (errori nel video e audio transcodifica in mp3), offset
-\subsection{Come verificare uguaglianza tra video}  % ffmpeg e psnr
-\subsection{Come verificare uguaglianza tra audio}  % fingerprinting con chromaprint, suo wrapper in python, open source software e mie contribuzioni, comunicare col mantainer
+Prima di dedicarsi alla scrittura dei test, si è verificata la corretta funzionalità del software.
+
+Sono stati riscontrati dei problemi importanti relativi alla creazione del \textit{PreservationAudioVisualFile}
+
+\begin{lstlisting}[language=Python, caption=Codice iniziale; creazione PreservationAudioVisualFile]
+# Create Preservation Audio-Visual File with substituted audio
+video_file = files_name + '.mov'
+pvf_path = os.path.join(working_path, 'PreservationAudioVisualFile/', video_file)
+try:
+    audio = AudioFileClip(paf_path)
+    video = VideoFileClip(pvf_path)
+    # Open Irregularity File to get offset
+    irregularity_file_json = open(
+        os.path.join(temp_path, 'TapeIrregularityClassifier_IrregularityFileOutput2.json')
+    )
+    irregularity_file = json.load(irregularity_file_json)
+    offset = irregularity_file['Offset']/1000
+    if offset > 0:
+        audio = audio.subclip(t_start=offset)
+    else:
+        video = video.subclip(t_start=offset)
+    video = video.set_audio(audio)
+    video.write_videofile(pmf_path + 'PreservationAudioVisualFile.mov', bitrate='3000k', codec='mpeg4')
+    print("Preservation Audio-Visual File created")
+except OSError:
+    pprint(f"Preservation Audio-Visual File file '{pvf_path}' not found!", color=Color.RED)
+    quit(os.EX_NOINPUT)
+\end{lstlisting}
+
+Il primo problema è relativo alla sincronizzazione del video con l'audio: l'audio deve essere anticipato se viene trovato un offset positivo, altrimenti deve essere anticipato il video.
+Alle righe 12-16, si osserva che il comportamento non è quello richiesto, dato che a riga 16 l'offset ha valore negativo, allora \href{https://zulko.github.io/moviepy/}{MoviePy}, libreria utilizzata per eseguire editing video, farà iniziare la traccia a partire da $|offset|$ secondi prima del termine della clip.\footnote{Codice sorgente: \url{https://zulko.github.io/moviepy/_modules/moviepy/Clip.html#Clip.subclip}}    % TODO da verificare se vero
+
+Il secondo problema è relativo alla non specifica nel codice della codifica audio che porta la libreria MoviePy a ricadere nel comportamento di default, ovvero generare un file con codifica MP3 (lossy) a \qty{44100}{\Hz} e ad avere di conseguenza, in questo caso, una transcodifica, il che non è ottimale per un software che ha come obiettivo la conservazione di documenti audio.
+
+Il terzo problema invece è provocato dalla libreria \href{https://zulko.github.io/moviepy/}{MoviePy} che, per motivi sconosciuti e solo in alcuni casi, genera file corrotti nella traccia video, nello specifico che si bloccano dopo alcuni secondi.  % TODO verificare se c'entra con il problema di cui sopra.
+
+Per risolvere questi due problemi si è scelto di sostituire MoviePy direttamente con \href{https://ffmpeg.org/}{FFmpeg}, ottenendo come risultato il seguente codice:
+\begin{lstlisting}[language=Python, caption=Codice finale; creazione PreservationAudioVisualFile]
+# Create Preservation Audio-Visual File with substituted audio
+video_file = files_name + '.mov'
+pvf_path = os.path.join(working_path, 'PreservationAudioVisualFile/', video_file)
+try:
+    # Open Irregularity File to get offset
+    irregularity_file_json = open(
+        os.path.join(temp_path, 'TapeIrregularityClassifier_IrregularityFileOutput2.json')
+    )
+    irregularity_file = json.load(irregularity_file_json)
+    offset = irregularity_file['Offset']
+    command_to_run = ['ffmpeg',
+                      '-y', '-hide_banner', '-loglevel', 'error']
+    # If offset is positive, the audio is anticipated, otherwise video is anticipated (through seek)
+    if offset > 0:
+        command_to_run = command_to_run + ['-i', pvf_path,
+                                           '-ss', str(offset)+'ms', '-i', paf_path]
+    else:
+        command_to_run = command_to_run + ['-ss', str(offset * -1)+'ms', '-i', pvf_path,
+                                           '-i', paf_path]
+    command_to_run = command_to_run + ['-c:v', 'mpeg4', '-c:a', 'copy',
+                                       '-map', '0:v', '-map', '1:a',
+                                       '-b:v', '3M', '-maxrate', '4M', '-bufsize', '4M',
+                                       pmf_path + 'PreservationAudioVisualFile.mov']
+    subprocess.run(command_to_run)
+    print("Preservation Audio-Visual File created")
+except OSError:
+    pprint(f"Preservation Audio-Visual File file '{pvf_path}' not found!", color=Color.RED)
+    quit(os.EX_NOINPUT)
+\end{lstlisting}
+
+
+\subsection{Come verificare l'uguaglianza tra audio}  % fingerprinting con chromaprint, suo wrapper in python, open source software e mie contribuzioni, comunicare col mantainer
+Per verificare l'uguaglianza fra tracce audio, inizialmente si è provato un confronto tramite le librerie \textit{hashlib} o \textit{filecmp}, ma entrambi i test non hanno avuto successo perchè in alcuni casi non è richiesto di verificare che il file sia lo stesso identico (stesso hash), ma piuttosto di controllare che il suono sia il medesimo\footnote{La differenza si osserva, per esempio, quando si hanno 2 file, uno scostato di qualche secondo rispetto all'altro, questo è ciò che accade nel caso in esame, quando si esegue la sincronizzazione audio/video.}.
+
+La soluzione trovata si basa sulla libreria \href{https://acoustid.org/chromaprint}{chromaprint}\footnote{chromaprint è la libreria che è alla base del progetto AcoustID, utilizzato nel piuttosto famoso software \href{https://musicbrainz.org/}{MusicBrainz} (\href{https://picard.musicbrainz.org/}{Picard}) che serve a taggare le proprie tracce musicali.}, la quale permette di ricavare delle impronte digitali (\textit{fingerprint}) da delle tracce audio, in maniera da poi confrontarle tra loro per ottenere la loro somiglianza.    % TODO taggare va bene?
+
+È stata utilizzata in particolare una libreria Python, la quale non è altro che un wrapper di AcoustID, chiamata \href{https://github.com/beetbox/pyacoustid}{pyacoustid} che aiuta lo sviluppatore Python esponendo direttamente le API di chromaprint ed un metodo per confrontare le impronte.
+
+\begin{lstlisting}[language=Python, caption=Test di comparazione di due file audio tramite la loro impronta digitale]
+AUDIO_THRESHOLD = 0.7
+# [...]
+input_fingerprint = acoustid.fingerprint_file(input_paf_path)
+output_fingerprint = acoustid.fingerprint_file(output_paf_path)
+assert acoustid.compare_fingerprints(input_fingerprint, output_fingerprint) > AUDIO_THRESHOLD, "PreservationAudioFile.wav is not the same as input"
+\end{lstlisting}
+
+Come si può leggere dal codice, è stata scelta come soglia di somiglianza il $70\%$, non è il $100\%$ perchè, ad esempio, nei casi in cui è stata effettuata la sincronizzazione audio/video l'audio non è esattamente uguale, inoltre dai vari test eseguiti sui dataset forniti, questo valore ha funzionato correttamente.
+
+% TODO parlare di soglia scelta
+Durante la scelta della soglia da adottare sono state eseguite diverse prove ed è interessante notare come
+
+
+
+
+% TODO parlare di opensource blabla
+% La libreria pyacoustid, nelle prime fasi di scrittura di 
+
+
+
+
+
+
+
+
+
+\subsection{Come verificare l'uguaglianza tra video}  % ffmpeg e psnr
 \subsection{Pulizia/reformat del codice della libreria} % principio DRY, docstrings, unit tests, compatiblità Windows ma esecuzione docker
 \section{\acs{CAE}-\acs{ARP} audio analyser}
 \subsection{Problemi pre-esistenti} % uso alias di pydantic ambiguo, typos, video analyser usa : invece di . e workaround, in Windows scipy.signal.correlate da overflow perche tipo di default per numpy è int32, test non funzionanti

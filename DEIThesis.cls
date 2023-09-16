@@ -505,6 +505,9 @@
 
 % -- CODE SNIPPETS --
 
+\renewcommand{\lstlistingname}{Codice}
+\renewcommand{\lstlistlistingname}{Codici}
+
 % Colors for code snippets highlights
 \definecolor{commentsColor}{RGB}{36, 161, 156}
 \definecolor{numColor}{RGB}{71, 96, 114}
@@ -514,7 +517,7 @@
 
 % Style of code snippets
 \lstdefinestyle{codeSnippet} {
-  backgroundcolor=\color{bgCodeColor},
+  % backgroundcolor=\color{bgCodeColor},
   commentstyle=\color{commentsColor},
   keywordstyle=\color{kwColor},
   numberstyle=\tiny\color{numColor},
