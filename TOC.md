@@ -63,6 +63,6 @@
 
 # Conclusioni
 
-## Cosa manca come test (gli altri AIMs)
+## Cosa manca come test (gli altri AIMs e usare altri dataset per migliorare le soglie)
 
 ## Cosa si potrebbe fare per l'audio digitalization/restoration (audio enhancement in input o basato su irregolarità, risvolti sulla fedeltà)

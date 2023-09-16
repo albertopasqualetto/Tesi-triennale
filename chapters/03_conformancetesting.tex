@@ -162,7 +162,7 @@ except OSError:
 \end{lstlisting}
 
 
-\subsection{Come verificare l'uguaglianza tra audio}  % fingerprinting con chromaprint, suo wrapper in python, open source software e mie contribuzioni, comunicare col mantainer
+\subsection{Come verificare l'uguaglianza tra audio}  % fingerprinting con chromaprint, suo wrapper in python, free software e mie contribuzioni, comunicare col mantainer
 Per verificare l'uguaglianza fra tracce audio, inizialmente si è provato un confronto tramite le librerie \textit{hashlib} o \textit{filecmp}, ma entrambi i test non hanno avuto successo perchè in alcuni casi non è richiesto di verificare che il file sia lo stesso identico (stesso hash), ma piuttosto di controllare che il suono sia il medesimo\footnote{La differenza si osserva, per esempio, quando si hanno 2 file, uno scostato di qualche secondo rispetto all'altro, questo è ciò che accade nel caso in esame, quando si esegue la sincronizzazione audio/video.}.
 
 La soluzione trovata si basa sulla libreria \href{https://acoustid.org/chromaprint}{chromaprint}\footnote{chromaprint è la libreria che è alla base del progetto AcoustID, utilizzato nel piuttosto famoso software \href{https://musicbrainz.org/}{MusicBrainz} (\href{https://picard.musicbrainz.org/}{Picard}) che serve a taggare le proprie tracce musicali.}, la quale permette di ricavare delle impronte digitali (\textit{fingerprint}) da delle tracce audio, in maniera da poi confrontarle tra loro per ottenere la loro somiglianza.    % TODO taggare va bene?
@@ -170,7 +170,7 @@ La soluzione trovata si basa sulla libreria \href{https://acoustid.org/chromapri
 È stata utilizzata in particolare una libreria Python, la quale non è altro che un wrapper di AcoustID, chiamata \href{https://github.com/beetbox/pyacoustid}{pyacoustid} che aiuta lo sviluppatore Python esponendo direttamente le API di chromaprint ed un metodo per confrontare le impronte.
 
 \begin{lstlisting}[language=Python, caption=Test di comparazione di due file audio tramite la loro impronta digitale]
-AUDIO_THRESHOLD = 0.7
+AUDIO_THRESHOLD = 0.7   # (ratio)
 # [...]
 input_fingerprint = acoustid.fingerprint_file(input_paf_path)
 output_fingerprint = acoustid.fingerprint_file(output_paf_path)
@@ -179,25 +179,72 @@ assert acoustid.compare_fingerprints(input_fingerprint, output_fingerprint) > AU
 
 Come si può leggere dal codice, è stata scelta come soglia di somiglianza il $70\%$, non è il $100\%$ perchè, ad esempio, nei casi in cui è stata effettuata la sincronizzazione audio/video l'audio non è esattamente uguale, inoltre dai vari test eseguiti sui dataset forniti, questo valore ha funzionato correttamente.
 
-% TODO parlare di soglia scelta
-Durante la scelta della soglia da adottare sono state eseguite diverse prove ed è interessante notare come
+Durante la scelta della soglia da adottare sono state eseguite diverse prove ed è stato verificato che, correttamente, nel caso dei file in esame, si ottengono dei risultati elevai, talvolta uguali a $1$, mentre in caso di file diversi, si ottiene un valore tendente a $0$.\footnote{Alcune prove si possono trovare alla pagina: \url{https://github.com/albertopasqualetto/Tesi-triennale/blob/main/Notebooks/chromaprint_comparisons.ipynb}}   % non è più stata trovata una differenza in base al codec
+
+La libreria pyacoustid, nelle prime fasi di scrittura dei test, non era ancora completamente funzionante e compresa del metodo per comparare le impronte digitali, infatti la sua versione 1.2.2, presente sulla repository \href{https://pypi.org/}{PyPi}, non vedeva ancora implementata la funzione \verb|compare_fingerprints|, già presente invece sulla sua repository GitHub grazie al contributo di un utente; tale implementazione era, però, non funzionante a causa di alcuni errori del codice come si può vedere dai cambiamenti applicati successivamente e descritti qui: 
+
+\begin{lstlisting}[language=diff]
+@@ -382,7 +382,7 @@ def _match_fingerprints(a: List[int], b: List[int]) -> float:
+            if biterror <= MAX_BIT_ERROR:
+                offset = i - j + bsize
+                counts[offset] += 1
+-    topcount = counts.max()
++    topcount = max(counts)
+    return topcount / min(asize, bsize)
 
 
+@@ -397,8 +397,8 @@ def compare_fingerprints(a, b) -> float:
+        raise ModuleNotFoundError("function needs chromaprint")
 
+    # decompress fingerprints
+-    a = [int(x) for x in chromaprint.decode_fingerprint(a)[0]]
+-    b = [int(x) for x in chromaprint.decode_fingerprint(b)[0]]
++    a = [int(x) for x in chromaprint.decode_fingerprint(a[1])[0]]
++    b = [int(x) for x in chromaprint.decode_fingerprint(b[1])[0]]
+    return _match_fingerprints(a, b)
+\end{lstlisting}
 
-% TODO parlare di opensource blabla
-% La libreria pyacoustid, nelle prime fasi di scrittura di 
+Per applicare queste modifiche è stato necessario effettuare una \href{https://github.com/beetbox/pyacoustid/pull/78}{\ac{PR}}\footnote{Una \ac{PR} è una richiesta ai manutentori del codice aggiungerne di proprio per implementare nuove funzioni o per correggere dei problemi.} sulla repository ufficiale a cui ha seguito uno scambio di messaggi con il manutentore e l'implementatore del codice; questa è una pratica comune nel mondo del software libero, il quale, tra i vari vantaggi, permette di leggere il codice sorgente e contribuire con dei miglioramenti alle tecnologie che si utilizzano.\footnote{\url{https://opensource.guide/how-to-contribute/#improve-software-you-rely-on}}
+Si è contribuito al pyacoustid anche con \href{https://github.com/beetbox/pyacoustid/pull/79}{un'altra \ac{PR}} che permette l'utilizzo della libreria anche su piattaforme con Windows, la quale è stata implementata collaborando col manutentore.
 
-
-
-
-
-
-
+Ora la versione presente su PyPi è la 1.3.0, contenente tutte le modifiche citate.
 
 
 \subsection{Come verificare l'uguaglianza tra video}  % ffmpeg e psnr
+Per verificare l'uguaglianza tra gli stream video è stato utilizzato il \ac{PSNR} medio tra i frame dei 2 video, calcolato tramite FFmpeg.\footnote{\url{https://ffmpeg.org/ffmpeg-all.html#psnr}}
+
+Il \ac{PSNR} è una misura di qualità di un'immagine compressa rispetto all'originale; viene definito come il rapporto tra la massima potenza di un segnale (immagine originale) e la potenza del rumore rispetto alla sua rappresentazione (immagine compressa).
+In questo caso si utilizzano al posto delle immagini originale e compressa, i frame dei 2 video da confrontare rispettivamente.
+
+\begin{lstlisting}[language=Python, caption=Test di comparazione di due file audio tramite il psnr]
+VIDEO_THRESHOLD = 25    # dB
+# [...]
+psnr_out = subprocess.run(["ffmpeg",    # video
+                           "-i", input_pvf_path,
+                           "-i", tmp_path / (files_name+"_PreservationAudioVisualFile_output_video.mov"),
+                           "-filter_complex", "psnr",
+                           "-f", "null",
+                           "-"],
+                          capture_output=True)
+psnr_out = psnr_out.stderr.decode("utf-8")
+psnr = psnr_out[psnr_out.find('average:') + 8:psnr_out.find(' ', psnr_out.find('average:'))]
+print("psnr_out=", psnr)
+assert psnr == 'inf' or float(psnr) > VIDEO_THRESHOLD, "PreservationAudioVisualFile.mov is not the same as input"
+\end{lstlisting}
+
+Come si può osservare dal codice, è stato individuato un \ac{PSNR} soglia di \qty{25}{\dB}, ancora una volta non è massimo (infinito) perchè nei casi di sincronizzazione in cui si taglia una parte di video, si ottiene un valore minore (e nemmeno elevato) di \ac{PSNR}, ma comunque in grado di discernere video "uguali" da video veramente distinti.
+
+Esistono altri metodi per comparare dei video e tra questi vi sono il \ac{SSIM} oppure, ancora una volta, qualche algoritmo di fingerprinting, ma si è visto che il \ac{PSNR} è funzionale allo scopo ed è il più rapido ad essere eseguito; il codice potrebbe essere migliorato per avere più certezza dell'uguaglianza, ma questo non è un problema semplice considerando che i video in questione sono identici a meno di un'eventuale taglio della parte iniziale; un'idea potrebbe essere quella di calcolare il psnr a ritroso e considerando i video solo per la durata del più breve, ciò però non considererebbe il caso limite di file più lunghi con la parte terminale in comune.
+
+
 \subsection{Pulizia/reformat del codice della libreria} % principio DRY, docstrings, unit tests, compatiblità Windows ma esecuzione docker
+
+
+
+
+
+
+
 \section{\acs{CAE}-\acs{ARP} audio analyser}
 \subsection{Problemi pre-esistenti} % uso alias di pydantic ambiguo, typos, video analyser usa : invece di . e workaround, in Windows scipy.signal.correlate da overflow perche tipo di default per numpy è int32, test non funzionanti
 \subsection{Come verificare che l'offset scelto è abbastanza vicino a quello reale} % formula fornita + ffprobe

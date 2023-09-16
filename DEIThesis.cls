@@ -536,3 +536,15 @@
 }
 
 \lstset{style=codeSnippet}
+
+
+\definecolor{diffstart}{RGB}{128, 128, 128}
+\definecolor{diffincl}{RGB}{0, 128, 0}
+\definecolor{diffrem}{RGB}{255, 0, 0}
+
+\lstdefinelanguage{diff}{
+    basicstyle=\linespread{0.9}\ttfamily\footnotesize,
+    morecomment=[f][\color{diffstart}]{@@},
+    morecomment=[f][\color{diffincl}]{+\ },
+    morecomment=[f][\color{diffrem}]{-\ },
+}
