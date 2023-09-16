@@ -30,9 +30,9 @@
 
 ### Bug e altri problemi pre-esistenti (moviepy vs ffmpeg (errori nel video e audio transcodifica in mp3), offset)
 
-### Come verificare uguaglianza tra video (ffmpeg e psnr)
-
 ### Come verificare uguaglianza tra audio (fingerprinting con chromaprint, suo wrapper in python, open source software e mie contribuzioni, comunicare col mantainer)
+
+### Come verificare uguaglianza tra video (ffmpeg e psnr)
 
 ### Pulizia/reformat del codice della libreria (principio DRY, docstrings, unit tests, compatiblità Windows ma esecuzione docker)
 
