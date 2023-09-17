@@ -6,7 +6,7 @@ Nel caso in esame, \ac{ARP}, si tratta di verificare che il suo funzionamento se
 
 L'obiettivo di questa tesi è quella di scrivere il codice dei test di conformità, basandosi sul documento che li descrive fornito da MPAI.
 
-L'ambiente di sviluppo è un ambiente virtuale di \href{https://python-poetry.org/}{Poetry} basato su Python 3.10 (poi aggiornato a 3.11)\footnote{Vedi sezione \ref{ssec:py-311}}, su una macchina Windows 11 (per alcuni confronti, occasionalmente è stata utilizzata una macchina virtuale con Ubuntu 20.04.6 LTS). L'ambiente di produzione è un server Docker.\footnote{Per questo motivo l'implementazione del CSC ha anche una modalità di esecuzione come server con protocollo gRPC, utilizzato per fare comunicare i vari \acp{AIM} tra loro.} Per il versionamento del software viene usato \href{https://git-scm.com/}{git}, utilizzando come server il \href{https://gitlab.dei.unipd.it/}{GitLab del \ac{DEI}}.
+L'ambiente di sviluppo è un ambiente virtuale di \href{https://python-poetry.org/}{Poetry} basato su Python 3.10 (poi aggiornato a 3.11)\footnote{Vedi sezione \ref{ssec:py-311}}, su una macchina Windows 11 (per alcuni confronti, occasionalmente è stata utilizzata una macchina virtuale con Ubuntu 20.04.6 LTS). L'ambiente di produzione è un server Docker con container linux.\footnote{Per questo motivo l'implementazione del CSC ha anche una modalità di esecuzione come server con protocollo gRPC, utilizzato per fare comunicare i vari \acp{AIM} tra loro.} Per il versionamento del software viene usato \href{https://git-scm.com/}{git}, utilizzando come server il \href{https://gitlab.dei.unipd.it/}{GitLab del \ac{DEI}}.
 
 
 \section{Tests e \acl{TDD}} \label{sec:tests-tdd}
@@ -90,6 +90,64 @@ Viene riportata la descrizione dei conformance tests da seguire, definita da MPA
     \caption{Test di conformità per \ac{ARP} Packager}
     \label{tab:packager-valutazione}
 \end{table}
+
+Ad ogni esecuzione dei test è richiesto di inserire i dati nella tabella \ref{tab:packager-report}.
+\begin{table}[H]
+    \centering
+    \begin{adjustbox}{max width=\textwidth}
+        \begin{tabular}{|c|c|}
+            
+            \hline
+            Conformance Tester ID                       &   Unique Conformance Tester Identifier assigned by MPAI\\
+            \hline
+            Standard, Use Case ID and Version           &   Standard ID and Use Case ID, Version and Profile of the standard in the form “CAE:ARP:1:0”.\\
+            \hline
+            Name of AIM                                 &   Packager\\
+            \hline
+            Implementer ID                              &   Unique Implementer Identifier assigned by MPAI Store.\\
+            \hline
+            AIM Implementation Version                  &   Unique Implementation Identifier assigned by Implementer.\\
+            \hline
+            Neural Network Version (optional)           &   Unique Neural Network Identifier assigned by Implementer.\\
+            \hline
+            Identifier of Conformance Testing Dataset   &   Unique Dataset Identifier assigned by MPAI Store.\\
+            \hline
+            TestID                                      &   Unique Test Identifier assigned by Conformance Tester.\\
+            \hline
+            Actual output                               &   Actual output provided as a matrix of n rows containing output assertions.\\
+                                                        &   \begin{tabular}{|c|c|c|c|c|}
+                \hline
+                Output                      &   Files                           &   1   &   \dots   &   n\\
+                \hline
+                Access Copy Files           &   Restored Audio Files            &   T/F &   \dots   &   T/F\\
+                                            &   Editing List                    &   T/F &   \dots   &   T/F\\
+                                            &   Irregularity File               &   T/F &   \dots   &   T/F\\
+                                            &   Irregularity Images             &   T/F &   \dots   &   T/F\\
+                \hline
+                Preservation Master Files   &   Preservation Audio File         &   T/F &   \dots   &   T/F\\
+                                            &   Preservation Audio Visual File  &   T/F &   \dots   &   T/F\\
+                                            &   Irregularity File               &   T/F &   \dots   &   T/F\\
+                                            &   Irregularity Images             &   T/F &   \dots   &   T/F\\
+                \hline
+            \end{tabular}\\
+                                                        &   Final assertion: T/F\\
+            \hline
+            Execution time (optional)       &   Duration of test execution\\
+            \hline
+            Test comment (optional)         &   Comments on test results and possible needed actions.\\
+            \hline
+            Test Date                       &   yyyy/mm/dd.\\
+            \hline
+        \end{tabular}
+    \end{adjustbox}
+    \caption{Report da compilare ad ogni esecuzione del packager.}
+    \label{tab:packager-report}
+\end{table}
+Il report viene compilato automaticamente in un file JSON per quanto conosciuto dal software anche grazie all'aiuto della libreria \href{https://github.com/numirias/pytest-json-report}{pytest-json-report} che raccoglie i risultati dei test in un formato machine-readable.
+
+Il seguente listato ne è un esempio:
+\lstinputlisting[language=json]{listings/packager-report.json}
+% TODO inserire report riportato in tabella?
 
 
 \subsection{Bug ed altri problemi pre-esistenti}    % moviepy vs ffmpeg (errori nel video e audio transcodifica in mp3), offset
@@ -205,7 +263,7 @@ La libreria pyacoustid, nelle prime fasi di scrittura dei test, non era ancora c
 \end{lstlisting}
 
 Per applicare queste modifiche è stato necessario effettuare una \href{https://github.com/beetbox/pyacoustid/pull/78}{\ac{PR}}\footnote{Una \ac{PR} è una richiesta ai manutentori del codice aggiungerne di proprio per implementare nuove funzioni o per correggere dei problemi.} sulla repository ufficiale a cui ha seguito uno scambio di messaggi con il manutentore e l'implementatore del codice; questa è una pratica comune nel mondo del software libero, il quale, tra i vari vantaggi, permette di leggere il codice sorgente e contribuire con dei miglioramenti alle tecnologie che si utilizzano.\footnote{\url{https://opensource.guide/how-to-contribute/#improve-software-you-rely-on}}
-Si è contribuito al pyacoustid anche con \href{https://github.com/beetbox/pyacoustid/pull/79}{un'altra \ac{PR}} che permette l'utilizzo della libreria anche su piattaforme con Windows, la quale è stata implementata collaborando col manutentore.
+Si è contribuito a pyacoustid anche con \href{https://github.com/beetbox/pyacoustid/pull/79}{un'altra \ac{PR}} che permette l'utilizzo della libreria anche su piattaforme con Windows, la quale è stata implementata collaborando col manutentore.
 
 Ora la versione presente su PyPi è la 1.3.0, contenente tutte le modifiche citate.
 
@@ -238,7 +296,23 @@ Esistono altri metodi per comparare dei video e tra questi vi sono il \ac{SSIM} 
 
 
 \subsection{Pulizia/reformat del codice della libreria} % principio DRY, docstrings, unit tests, compatiblità Windows ma esecuzione docker
+A termine del lavoro è stato eseguito un reformat del codice della libreria, nello stile del \ac{TDD}.
+Si è cercato di seguire il principio \ac{DRY}, ovvero di limitare la ridondanza del codice creando delle funzioni autoesplicative per ogni macro azione del codice.
+Facendo ciò si è limitata la ridondanza sia all'interno dello stesso file, sia si è rimossa la duplicazione tra client e server, che ora utilizzano entrambi le funzioni di una libreria condivisa.
 
+Per le funzioni create precedentemente sono stati creati degli unit tests per le funzionalità non ancora testate dai conformance tests.
+
+Ove opportuno sono state scritte le docstings per le funzioni, ovvero la loro documentazione.
+
+Sono state anche aggiunte delle specifiche del comportamento per assicurare l'esecuzione da capo a fine in Windows, dato che alcune funzionalità non sono supportate dal sistema operativo di Microsoft:
+\begin{lstlisting}[language=diff]
+- quit(os.EX_CONFIG)
++ if not sys.platform.startswith(('win', 'cygwin')):
++     quit(os.EX_CONFIG)  # `os.EX_CONFIG` is not compatible with the above platforms in Python 3.10
++ else:
++     quit()
+\end{lstlisting}
+Ciò è stato fatto per assicurare l'esecuzione multipiattaforma, nonostante in produzione il packager sia eseguito in un container linux.
 
 
 

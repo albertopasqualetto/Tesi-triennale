@@ -548,3 +548,37 @@
     morecomment=[f][\color{diffincl}]{+\ },
     morecomment=[f][\color{diffrem}]{-\ },
 }
+
+\definecolor{jdelim}{RGB}{20,105,176}
+\definecolor{jnum}{RGB}{106, 109, 32}
+\definecolor{jstring}{rgb}{0.64,0.08,0.08}
+
+\lstdefinelanguage{json}{
+    numbers=left,
+    numberstyle=\small,
+    rulecolor=\color{black},
+    showspaces=false,
+    showtabs=false,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
+    breakatwhitespace=true,
+    basicstyle=\linespread{0.9}\ttfamily\footnotesize,
+    upquote=true,
+    morestring=[b]",
+    stringstyle=\color{jstring},
+    literate=
+     *{0}{{{\color{jnum}0}}}{1}
+      {1}{{{\color{jnum}1}}}{1}
+      {2}{{{\color{jnum}2}}}{1}
+      {3}{{{\color{jnum}3}}}{1}
+      {4}{{{\color{jnum}4}}}{1}
+      {5}{{{\color{jnum}5}}}{1}
+      {6}{{{\color{jnum}6}}}{1}
+      {7}{{{\color{jnum}7}}}{1}
+      {8}{{{\color{jnum}8}}}{1}
+      {9}{{{\color{jnum}9}}}{1}
+      {\{}{{{\color{jdelim}{\{}}}}{1}
+      {\}}{{{\color{jdelim}{\}}}}}{1}
+      {[}{{{\color{jdelim}{[}}}}{1}
+      {]}{{{\color{jdelim}{]}}}}{1},
+}

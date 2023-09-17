@@ -1,0 +1,43 @@
+{
+    "conformance_tester_id": "",
+    "standard_usecaseid_version": "CAE:ARP:1.0",
+    "name_of_aim": "Packager",
+    "implementer_id": "",
+    "neural_network_version": "",
+    "identifier_of_conformance_testing_dataset": "",
+    "test_id": "",
+    "actual_output": {
+        "BERIO052": {
+            "access_copy_files": {
+                "editing_list": true,
+                "restored_audio_files": true,
+                "irregularity_file": true,
+                "irregularity_images": true
+            },
+            "preservation_master_files": {
+                "preservation_audio_file": true,
+                "irregularity_file": true,
+                "irregularity_images": true,
+                "preservation_audio_visual_file": true
+            }
+        },
+        "BERIO100": {
+            "access_copy_files": {
+                "irregularity_file": true,
+                "editing_list": true,
+                "irregularity_images": true,
+                "restored_audio_files": true
+            },
+            "preservation_master_files": {
+                "preservation_audio_file": true,
+                "irregularity_file": true,
+                "irregularity_images": true,
+                "preservation_audio_visual_file": true
+            }
+        },
+        "final_assertion": true
+    },
+    "execution_time": 351.11644291877747,
+    "test_comment": "",
+    "test_date": "2023/09/16"
+}
