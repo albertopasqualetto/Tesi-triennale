@@ -1,0 +1,22 @@
+{
+    "conformance_tester_id": "",
+    "standard_usecaseid_version": "CAE:ARP:1.0",
+    "name_of_aim": "Audio Analyser",
+    "implementer_id": "",
+    "neural_network_version": "",
+    "identifier_of_conformance_testing_dataset": "",
+    "test_id": "",
+    "actual_output": {
+        "BERIO052": {
+            "recall": 1.0,
+            "precision": 1.0
+        },
+        "BERIO100": {
+            "recall": 1.0,
+            "precision": 1.0
+        }
+    },
+    "execution_time": 418.7547469139099,
+    "test_comment": "",
+    "test_date": "2023/09/01"
+}

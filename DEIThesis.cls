@@ -459,8 +459,6 @@
 % -- MAIN MATTER --
 
 \renewcommand{\mainmatter} {
-  \graphicspath{ {img/} }
-
   \cleardoublepage
 
   % reset page counter
@@ -549,36 +547,39 @@
     morecomment=[f][\color{diffrem}]{-\ },
 }
 
-\definecolor{jdelim}{RGB}{20,105,176}
-\definecolor{jnum}{RGB}{106, 109, 32}
-\definecolor{jstring}{rgb}{0.64,0.08,0.08}
+\definecolor{jsondelim}{RGB}{178,20,20}
+\definecolor{jsonnum}{RGB}{60, 32, 110}
+\definecolor{jsonstring}{RGB}{0.64,0.08,0.08}
+\definecolor{jsoncomment}{RGB}{169,169,169}
 
 \lstdefinelanguage{json}{
-    numbers=left,
-    numberstyle=\small,
-    rulecolor=\color{black},
-    showspaces=false,
-    showtabs=false,
-    breaklines=true,
-    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{gray}\hookrightarrow\space}},
-    breakatwhitespace=true,
     basicstyle=\linespread{0.9}\ttfamily\footnotesize,
-    upquote=true,
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    commentstyle=\color{jsoncomment},
+    keywordstyle=\color{jsonnum},
+    keywords={null,true,false},
     morestring=[b]",
-    stringstyle=\color{jstring},
+    stringstyle=\color{jsonstring},
+    morecomment=[l]{//},
+    morecomment=[s]{/*}{*/},
     literate=
-     *{0}{{{\color{jnum}0}}}{1}
-      {1}{{{\color{jnum}1}}}{1}
-      {2}{{{\color{jnum}2}}}{1}
-      {3}{{{\color{jnum}3}}}{1}
-      {4}{{{\color{jnum}4}}}{1}
-      {5}{{{\color{jnum}5}}}{1}
-      {6}{{{\color{jnum}6}}}{1}
-      {7}{{{\color{jnum}7}}}{1}
-      {8}{{{\color{jnum}8}}}{1}
-      {9}{{{\color{jnum}9}}}{1}
-      {\{}{{{\color{jdelim}{\{}}}}{1}
-      {\}}{{{\color{jdelim}{\}}}}}{1}
-      {[}{{{\color{jdelim}{[}}}}{1}
-      {]}{{{\color{jdelim}{]}}}}{1},
+        *{0}{{{\color{jsonnum}0}}}{1}
+        {1}{{{\color{jsonnum}1}}}{1}
+        {2}{{{\color{jsonnum}2}}}{1}
+        {3}{{{\color{jsonnum}3}}}{1}
+        {4}{{{\color{jsonnum}4}}}{1}
+        {5}{{{\color{jsonnum}5}}}{1}
+        {6}{{{\color{jsonnum}6}}}{1}
+        {7}{{{\color{jsonnum}7}}}{1}
+        {8}{{{\color{jsonnum}8}}}{1}
+        {9}{{{\color{jsonnum}9}}}{1}
+        {\{}{{{\color{jsondelim}{\{}}}}{1}
+        {\}}{{{\color{jsondelim}{\}}}}}{1}
+        {[}{{{\color{jsondelim}{[}}}}{1}
+        {]}{{{\color{jsondelim}{]}}}}{1},
 }
