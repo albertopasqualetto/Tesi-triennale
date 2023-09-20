@@ -154,7 +154,7 @@ Prima di dedicarsi alla scrittura dei test, si è verificata la corretta funzion
 
 Sono stati riscontrati dei problemi importanti relativi alla creazione del \textit{PreservationAudioVisualFile}
 
-\begin{lstlisting}[language=Python, caption=Codice iniziale; creazione PreservationAudioVisualFile]
+\begin{lstlisting}[language=Python, caption={Codice iniziale, creazione PreservationAudioVisualFile}]
 # Create Preservation Audio-Visual File with substituted audio
 video_file = files_name + '.mov'
 pvf_path = os.path.join(working_path, 'PreservationAudioVisualFile/', video_file)
@@ -180,14 +180,14 @@ except OSError:
 \end{lstlisting}
 
 Il primo problema è relativo alla sincronizzazione del video con l'audio: l'audio deve essere anticipato se viene trovato un offset positivo, altrimenti deve essere anticipato il video.
-Alle righe 12-16, si osserva che il comportamento non è quello richiesto, dato che a riga 16 l'offset ha valore negativo, allora \href{https://zulko.github.io/moviepy/}{MoviePy}, libreria utilizzata per eseguire editing video, farà iniziare la traccia a partire da $|offset|$ secondi prima del termine della clip.\footnote{Codice sorgente: \url{https://zulko.github.io/moviepy/_modules/moviepy/Clip.html#Clip.subclip}}    % TODO da verificare se vero
+Alle righe 12-16, si osserva che il comportamento non è quello richiesto, dato che a riga 16 l'offset ha valore negativo, allora \href{https://zulko.github.io/moviepy/}{MoviePy}, libreria utilizzata per eseguire editing video, farà iniziare la traccia a partire da $|offset|$ secondi prima del termine della clip.\footnote{Codice sorgente: \url{https://zulko.github.io/moviepy/_modules/moviepy/Clip.html\#Clip.subclip}}    % TODO da verificare se vero
 
 Il secondo problema è relativo alla non specifica nel codice della codifica audio che porta la libreria MoviePy a ricadere nel comportamento di default, ovvero generare un file con codifica MP3 (lossy) a \qty{44100}{\Hz} e ad avere di conseguenza, in questo caso, una transcodifica, il che non è ottimale per un software che ha come obiettivo la conservazione di documenti audio.
 
 Il terzo problema invece è provocato dalla libreria \href{https://zulko.github.io/moviepy/}{MoviePy} che, per motivi sconosciuti e solo in alcuni casi, genera file corrotti nella traccia video, nello specifico che si bloccano dopo alcuni secondi.  % TODO verificare se c'entra con il problema di cui sopra.
 
 Per risolvere questi due problemi si è scelto di sostituire MoviePy direttamente con \href{https://ffmpeg.org/}{FFmpeg}, ottenendo come risultato il seguente codice:
-\begin{lstlisting}[language=Python, caption=Codice finale; creazione PreservationAudioVisualFile]
+\begin{lstlisting}[language=Python, caption={Codice finale, creazione PreservationAudioVisualFile}]
 # Create Preservation Audio-Visual File with substituted audio
 video_file = files_name + '.mov'
 pvf_path = os.path.join(working_path, 'PreservationAudioVisualFile/', video_file)
@@ -261,14 +261,14 @@ La libreria pyacoustid, nelle prime fasi di scrittura dei test, non era ancora c
     return _match_fingerprints(a, b)
 \end{lstlisting}
 
-Per applicare queste modifiche è stato necessario effettuare una \href{https://github.com/beetbox/pyacoustid/pull/78}{\ac{PR}}\footnote{Una \ac{PR} è una richiesta ai manutentori del codice aggiungerne di proprio per implementare nuove funzioni o per correggere dei problemi.} sulla repository ufficiale a cui ha seguito uno scambio di messaggi con il manutentore e l'implementatore del codice; questa è una pratica comune nel mondo del software libero, il quale, tra i vari vantaggi, permette di leggere il codice sorgente e contribuire con dei miglioramenti alle tecnologie che si utilizzano.\footnote{\url{https://opensource.guide/how-to-contribute/#improve-software-you-rely-on}}
+Per applicare queste modifiche è stato necessario effettuare una \href{https://github.com/beetbox/pyacoustid/pull/78}{\ac{PR}}\footnote{Una \ac{PR} è una richiesta ai manutentori del codice aggiungerne di proprio per implementare nuove funzioni o per correggere dei problemi.} sulla repository ufficiale a cui ha seguito uno scambio di messaggi con il manutentore e l'implementatore del codice; questa è una pratica comune nel mondo del software libero, il quale, tra i vari vantaggi, permette di leggere il codice sorgente e contribuire con dei miglioramenti alle tecnologie che si utilizzano.\footnote{\url{https://opensource.guide/how-to-contribute/\#improve-software-you-rely-on}}
 Si è contribuito a pyacoustid anche con \href{https://github.com/beetbox/pyacoustid/pull/79}{un'altra \ac{PR}} che permette l'utilizzo della libreria anche su piattaforme con Windows, la quale è stata implementata collaborando col manutentore.
 
 Ora la versione presente su PyPi è la 1.3.0, contenente tutte le modifiche citate.
 
 
 \subsection{Come verificare l'uguaglianza tra video} \label{ssec:packager-video}    % ffmpeg e psnr
-Per verificare l'uguaglianza tra gli stream video è stato utilizzato il \ac{PSNR} medio tra i frame dei 2 video, calcolato tramite FFmpeg.\footnote{\url{https://ffmpeg.org/ffmpeg-all.html#psnr}}
+Per verificare l'uguaglianza tra gli stream video è stato utilizzato il \ac{PSNR} medio tra i frame dei 2 video, calcolato tramite FFmpeg.\footnote{\url{https://ffmpeg.org/ffmpeg-all.html\#psnr}}
 
 Il \ac{PSNR} è una misura di qualità di un'immagine compressa rispetto all'originale; viene definito come il rapporto tra la massima potenza di un segnale (immagine originale) e la potenza del rumore rispetto alla sua rappresentazione (immagine compressa).
 In questo caso si utilizzano al posto delle immagini originale e compressa, i frame dei 2 video da confrontare rispettivamente.
@@ -425,7 +425,7 @@ Questa problematica risiede nella libreria \texttt{mpai-cae-arp}, la quale viene
 
 Sono stati sistemati degli errori di battitura, alcuni dei quali impedivano il funzionamento del codice (vedi l'uso ambiguo di pydantic precedentemente permesso alla sottosezione \ref{ssec:mpaicaearp-pydantic})
 
-È stata aggiornata la libreria mpai-cae-arp:
+È stata aggiornata la versione richiesta della libreria mpai-cae-arp:
 \begin{lstlisting}[language=diff]
 @@ -21,5 +21,5 @@ audio-analyser = 'audio_analyzer.cli:main'
     pandas = "^2.0.0"
@@ -435,13 +435,13 @@ Sono stati sistemati degli errori di battitura, alcuni dei quali impedivano il f
 +   mpai-cae-arp = "^0.4.1"
     ffmpeg-python = "^0.2.0"
 \end{lstlisting}
-su cui sono basati tutti gli \ac{AIM} di \ac{ARP}, si nota che la specifica \verb|^0.3.0| (basata sul \href{https://semver.org/lang/it/}{versionamento semantico}) permette solo le versioni $\ge0.3.0, <0.4.0$, quindi l'aggiornamento fino a prima della successiva MINOR, differendo dal normale funzionamento con versioni con MAJOR$\ge1$ ($\ge1.0.0$) con cui si permette l'aggiornamento fino a prima della successiva MAJOR.\footnote{Fonte: \href{https://python-poetry.org/docs/dependency-specification/#caret-requirements}{documentazione di Poetry}.}
+su cui sono basati tutti gli \ac{AIM} di \ac{ARP}, si nota che la specifica \verb|^0.3.0| (basata sul \href{https://semver.org/lang/it/}{versionamento semantico}) permette solo le versioni $\ge0.3.0, <0.4.0$, quindi l'aggiornamento fino a prima della successiva MINOR, differendo dal normale funzionamento con versioni con MAJOR$\ge1$ ($\ge1.0.0$) con cui si permette l'aggiornamento fino a prima della successiva MAJOR.\footnote{Fonte: \href{https://python-poetry.org/docs/dependency-specification/\#caret-requirements}{documentazione di Poetry}.}
 
 Infine nel codice dei test si dovrà fronteggiare il fatto che, in maniera incorretta, nel video analyser si utilizzino come divisore tra secondi e millisecondi i due punti (:) (si può vedere nei file \verb|*_IrregularityFileOutputN.json|), quindi, alla lettura di file contenenti irregolarità provenienti dal video analyser, si dovranno applicare delle soluzioni per aggirare il problema ed inoltre si vedranno fallire i test che chiedono di verificare la sintassi dello schema JSON nel caso contengano le irregolarità già citate.
 
 
 \subsection{Come verificare che l'offset scelto è abbastanza vicino a quello reale} \label{ssec:audioanalyser-offset}   % formula fornita + ffprobe
-Nella tabella di valutazione \ref{tab:audioanalyser-valutazione} viene richiesto di controllare che l'offset calcolato dall'audio analyser sia compatibile con quello reale, fornito nel dataset 5.
+Nella tabella di valutazione \ref{tab:audioanalyser-valutazione} al punto 1.c viene richiesto di controllare che l'offset calcolato dall'audio analyser sia compatibile con quello reale, fornito nel dataset 5.
 Per fare ciò si richiede che la differenza in valore assoluto tra i 2 offset sia minore del tempo necessario a mostrare 3 frame del PreservationAudioVisualFile in millisecondi e si calcola tramite la seguente disuguaglianza:
 \begin{equation}
     |O_c - O_r| < 3 \times \lceil\frac{1000}{FPS_{DS3}}\rceil ms
@@ -475,21 +475,133 @@ def test_offset_difference(files_name: str):
 
 
 \subsection{Come verificare che i file siano wav} \label{ssec:audioanalyser-wav}    % RF64 ma in realtà va bene wav; libreria filetype, magic numbers, MIME
+Nella tabella \ref{tab:audioanalyser-valutazione} al punto 1.d viene richiesto di controllare che i segmenti audio estratti dall'audio analyser siano in formato RF64, un formato compadibile col wave ed in realtà è sufficiente verificare che tali segmenti siano in formato wave.
+
+Per fare ciò è stata utilizzata la libreria Python \href{https://github.com/h2non/filetype.py}{filetype} che legge i magic numbers, ovvero delle stringhe costanti nell'header di un file, utilizzati per identificarne la tipologia.
+Nel caso di wav, la sua firma in formato esadecimale è "\texttt{52 49 46 46 ?? ?? ?? ??
+57 41 56 45}".\footnote{Gli \texttt{??} indicano che i valori in quelle posizioni non sono fissi.}
+La libreria citata cerca di indovinare il tipo del file e ne restituisce il tipo \acs{MIME}, \texttt{audio/x-wav} nel caso del wave.\footnote{\acf{MIME} è uno standard che estende le email e fornisce il supporto a dati diversi dal solo testo. Il suo \texttt{Content-Type} indica il tipo di dato.}
 
 
+\subsection{Come verificare che la classificazione sia coerente} \label{ssec:audio-analyser-classificazione}    % non necessario ma utile per capire che l'IA non da sempre stessi risultati, output utilizzati per gli altri test, recall, precision
+Per verificare se la rilevazione e la classificazione delle irregolarità sono coerenti con il dataset di test, è stata creata la funzione \verb|check_classification_results| che confronta 2 dizionari contenenti irregolarità e restituisce il numero di elementi diversi e dove si trovano queste diversità.
+\begin{lstlisting}[language=Python]
+def check_classification_results(if_dict_1: dict, if_dict_2: dict, print_differences: bool = False) -> (bool, int, int, int):
+    """
+    Check if the irregularity files' classification results in `if_dict_1` are exactly equal to `if_dict_2`.
+
+    Parameters
+    ----------
+    if_dict_1 : dict
+        First irregularity file dictionary (first file to compare).
+    if_dict_2 : dict
+        Second irregularity file dictionary (second file to compare).
+    print_differences : bool, optional
+        If True, print the differences between the two files, by default False.
+
+    Returns
+    -------
+    tuple[bool, int, int, int]
+        Tuple of:
+            1) if the two files are exactly equal;
+            2) number of elements in common;
+            3) number of extra elements in the first file;
+            4) number of extra elements in the second file.
+    """
+    def check_all_combinations(list1: list[dict], idxs1: list[int], list2: list[dict], idxs2: list[int]) -> (int | None, int | None):
+        """
+        Check if any combination of 2 elements with specified indexes in two different lists is equal and return the indexes of the first equal elements found.
+        # [...]
+        """
+        def filtered_dict(dict_obj: dict, filter: list) -> dict:
+            # [...]
+
+        # [...]
+
+    exact_equality = True
+    found_n = 0
+    extra_in_1 = 0
+    extra_in_2 = 0
+    irrs_1 = if_dict_1["Irregularities"]
+    irrs_1.sort(key=lambda irr: int(irr["TimeLabel"].replace(":", "").replace(".", "")))  # FIXME workaround for ":" timelabel problem from video analyser
+    irrs_2 = if_dict_2["Irregularities"]
+    irrs_2.sort(key=lambda irr: int(irr["TimeLabel"].replace(":", "").replace(".", "")))
+
+    timelabels_1 = [irr["TimeLabel"] for irr in irrs_2]
+    for timelabel in list(dict.fromkeys(timelabels_1)):     # remove duplicates
+        irrs_1_idxs = get_irr_idxs_by_timelabel(irrs_1, timelabel)
+        irrs_2_idxs = get_irr_idxs_by_timelabel(irrs_2, timelabel)
+
+        while True:
+            irr_1_idx, irr_2_idx = check_all_combinations(irrs_1, irrs_1_idxs, irrs_2, irrs_2_idxs)
+            if irr_1_idx or irr_2_idx:  # first check exact equality
+                pass
+            else:  # then the others remained as couples (equal length already checked)
+                if not len(irrs_1_idxs) or not len(irrs_2_idxs):
+                    break
+                exact_equality = False
+                irr_1_idx = irrs_1_idxs[0]
+                irr_2_idx = irrs_2_idxs[0]
+                if print_differences:
+                    print("Irregularity", irrs_1[irr_1_idx], "\n\tnot exactly equal to\n\t", irrs_2[irr_2_idx])
+            found_n += 1
+            del irrs_1[irr_1_idx]
+            del irrs_2[irr_2_idx]
+            irrs_1_idxs.remove(irr_1_idx)
+            irrs_2_idxs.remove(irr_2_idx)
+            irrs_1_idxs = [idx - 1 if idx > irr_1_idx else idx for idx in irrs_1_idxs]
+            irrs_2_idxs = [idx - 1 if idx > irr_2_idx else idx for idx in irrs_2_idxs]
+        if len(irrs_2_idxs):
+            extra_in_2 += len(irrs_2_idxs)
+
+    extra_in_1 += len(irrs_1)
+
+    return exact_equality, found_n, extra_in_1, extra_in_2
+\end{lstlisting}
+
+Quando si ha a che fare con algoritmi basati sul machine learning è la norma avere risultati non deterministici per via della componente di casualità che spesso vi è inserita.
+Infatti il test che verifica l'esatta uguaglianza tra le 2 collezioni di irregolarità (\verb|test_audio_classification|) lo si è sempre visto fallire durante le sue esecuzioni, infatti esso non è richiesto dal documento descrivente i test di conformità.
+Ciò che è richiesto e che si basa sul codice appena citato, invece, è di controllare che tutte e sole le irregolarità presenti nel file di test siano presenti anche nel file in output ad una nuova esecuzione dell'audio analyser e che siano correttamente estratti i frammenti di audio agli istanti di tempo richiesti (punto 1.e di \ref{tab:audioanalyser-valutazione}) e che inoltre la precisione ed il recupero medi delle irregolarità trovate all'istante di tempo ed ai canali a cui appartengono rispetto al dizionario delle irregolarità di riferimento, il dataset 4, siano entrambi $>0.9$ (punto 2 di \ref{tab:audioanalyser-valutazione}).\footnote{Precisione e recupero (\textit{Precision} e \textit{Recall}) sono entrambe metriche sulle prestazioni di una classificazione: $Precision=\frac{True\ Positives}{True\ Positives + False\ Positives}$; $Recall=\frac{True\ Positives}{True\ Positives + False\ Negatives}$.}
+% TODO scrivere meglio
 
 
-
-
-
-
-\subsection{Come verificare che la classificazione sia corretta} \label{ssec:audio-analyser-classificazione}    % non necessario ma utile per capire che l'IA non da sempre stessi risultati, output utilizzati per gli altri test, recall, precision
 \section{Parallelizzare o no? confronto di velocità} \label{sec:parallelizzazione}
+% TODO fare test
+
+
+
+
+
 \section{Libreria \texttt{mpai-cae-arp}} \label{sec:lib-mpaicaearp} % a cosa serve
+La libreria \href{https://pypi.org/project/mpai-cae-arp/}{mpai-cae-arp} contiene le classi, le costanti e le funzioni su cui si basano tutti gli \acp{AIM} di \ac{ARP} e che permettono loro di interoperare.
+Per questo motivo alcuni problemi relativi a questa libreria sono stati discussi in altre sezioni dato la sua ampia influenza (vedi \ref{ssec:audioanalyser-pre}).
+% TODO scrivere altro?
+
+
 \subsection{Bug: Pydantic} \label{ssec:mpaicaearp-pydantic}    % che ha portato a dover aggiornare i moduli
 È stato risolto un problema relativo all'uso "ambiguo" di \href{https://docs.pydantic.dev/1.10/}{Pydantic}, il suo scopo principale all'interno di \ac{ARP} è quello di disporre di alias per i parametri delle funzioni in maniera da utilizzare il nome dell'alias per l'output verso file (\texttt{EditingList.json}, \verb|*_IrregularityFileOutputN.json|, \dots), seguendo la nomenclatura richiesta dalle specifiche tecniche; in precedenza l'utilizzo del nome del parametro o del suo alias non era regolato e questo ha portato a degli errori che impedivano la corretta esecuzione del software.
 La risoluzione consiste nell'utilizzo di \verb|serialization_alias| al posto di \texttt{alias}, dato l'utilizzo primario degli alias.
-\subsection{Bug: formatting sbagliato delle EditingList scritte su file}
-\subsection{Bug: test di \texttt{AudioWave} a singolo canale non funzionante e fix di \verb|get_channel|}
+
+Contestualmente, per favorire la futuribilità dell'applicativo, oltre a limitarne la presenza dei bug, si è scelto di aggiornare la libreria alla successiva major release (\verb|^2.3.0|).
+
+Queste modifiche implicano il dover aggiornare i nomi dei campi utilizzati in tutti gli \acp{AIM} impedendo la retrocompatibilità.
+
+
+\subsection{Bug: formatting sbagliato delle EditingList scritte su file} \label{ssec:mpaicaearp-editinglist-format}
+Un bug presente nel codice di questa libreria salvava nel filesystem dei file con una formattazione errata, un esempio ne è l'\texttt{EditingList.json} che veniva salvato nella seguente maniera:
+\lstinputlisting[language=json, caption={\texttt{EditingList.json} salvato tramite la precedente modalità, contiene solo una stringa}]{listings/EditingList-badformat.json}
+Il JSON di cui sopra è formato da una sola stringa che contiene la rappresentazione dell'oggetto Python ed i caratteri di escape mostrati, ciò portava al fallimento del relativo test di conformità del packager (\ref{sec:test-packager}.
+
+Il problema risiedeva nella chiamata di \texttt{json.dump} sulla stringa contenente l'oggetto da salvare in JSON generata da \texttt{model.json} (in Pydantic V2 chiamata \verb|model.model_dump_json|), questo comportamento probabilmente non era chiaro all'autore di questo codice per via del suo nome fuorviante; utilizzando, invece, la funzione di Pydantic V2 \verb|model.model_dump|, chiamata con parametro \texttt{mode='json'} per abilitare la serializzazione degli oggetti presenti nei campi della classe, si ottiene un dizionario Python che può essere scritto correttamente su file JSON (in Pydantic V1 la funzione corrispondente sarebbe stata \texttt{model.dict}, ma essa non fornisce la possibilità di serializzare gli oggetti).
+Ora il file precedente appare correttamente come:
+\lstinputlisting[language=json, caption={\texttt{EditingList.json} salvato tramite l'attuale modalità, contiene il dizionario con i suoi valori serializzati}]{listings/EditingList-goodformat.json}
+
+
+\subsection{Bug: test di \texttt{AudioWave} a singolo canale non funzionante e fix di \texttt{get\_channel}}    % e fare riferimento a dtype del suo buffer nominato sopra
+
+
+
+
+
 \subsection{Aggiornamento delle librerie perchè cross-dependencies ora supportate (librosa, llvmlite, numpy)}
 \subsection{Aggiornamento a Python 3.11} \label{ssec:py-311}

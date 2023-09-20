@@ -1,0 +1,18 @@
+{
+    "OriginalSpeedStandard": 7.5,
+    "OriginalEqualisationStandard": "IEC2",
+    "OriginalSampleFrequency": 96000,
+    "Restorations": [
+        {
+            "RestorationID": "e48cde17-7e5d-4a08-aca9-e65c375d0dd6",
+            "PreservationAudioFileStart": "00:00:00.000",
+            "PreservationAudioFileEnd": "00:10:46.400",
+            "RestoredAudioFileURI": "/data/temp/BERIO100/RestoredAudioFile/BERIO100.wav",
+            "ReadingBackwards": false,
+            "AppliedSpeedStandard": 7.5,
+            "AppliedSampleFrequency": 96000,
+            "AppliedEqualisationStandard": "IEC2"
+        }
+        
+    ]
+}

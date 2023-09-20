@@ -82,6 +82,7 @@
 
 % code snippets
 \RequirePackage{listings}
+\RequirePackage{fancyvrb}
 
 % plots, drawings etc...
 \RequirePackage{tikz}
@@ -502,6 +503,8 @@
 
 
 % -- CODE SNIPPETS --
+
+\VerbatimFootnotes
 
 \renewcommand{\lstlistingname}{Codice}
 \renewcommand{\lstlistlistingname}{Codici}
