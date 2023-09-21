@@ -4,9 +4,9 @@
 Come evoluzione del rinomato \ac{MPEG}, nel luglio 2020 nasce \ac{MPAI}\footnote{\url{https://mpai.community}}.
 
 \ac{MPAI} è un'organizzazione non profit che, ancora guidata da Leonardo Chiariglione, ha come obiettivo la promozione dell'uso efficiente dei dati\footnote{Per dati \ac{MPAI} intende, per esempio, dati mediatici, manifatturieri, automobilistici, sanitari e generici. \cite{mpaiMPAICommunity}.} tramite lo sviluppo di specifiche tecniche per la codifica di qualunque tipo di dato facendo uso dell'intelligenza artificiale e la semplificazione dell'utilizzo di tali codifiche imponendo ai detentori di proprietà intellettuale di stabilire delle licenze per framework (\acs{AIF}), invece di dover essere legati ai brevetti e creare delle \textit{patent pool} \cite{mpaiMPAICommunity}. Sostanzialmente l'organizzazione si pone come missione quella di porre ordine nel mondo delle codifiche utilizzanti l'IA e di farlo semplificando il metodo di accesso alle proprie tecnologie rispetto ad \ac{MPEG}.
-\ac{MPAI} opera attraverso la collaborazione delle varie parti interessate, tra cui l'università di Padova tramite il suo spin-off \href{www.audioinnova.com}{Audio Innova}.
+\ac{MPAI} opera attraverso la collaborazione delle varie parti interessate, tra cui l'Università di Padova tramite il suo spin-off \href{www.audioinnova.com}{Audio Innova}.
 
-In questi tempi l'utilizzo dell'intelligenza artificiale sta crescendo in maniera esponenziale e si sta avvicinando all'utente comune tramite la miriade di piattaforme online che sono nate, un esempio è \href{https://chat.openai.com}{ChatGPT} che ha raggiunto quota 100 milioni di utenti attivi in soli 2 mesi, raggiungendo il primato di applicazione ad uso privato con la crescita più veloce della storia.\footnote{\url{https://www.reuters.com/technology/chatgpt-sets-record-fastest-growing-user-base-analyst-note-2023-02-01/}} Nonostante il suo, come visto, uso spropositato l'IA è di fatto una tecnologia difficilmente comprensibile dalle masse; ciò porta l'utente a non capire che il \textit{chatbot} con cui sta interagendo, non replichi utilizzando un principio di causalità, ma piuttosto segua dei pattern linguistici i quali non sempre portano a risposte corrette, nonostante l'autorevolezza col quale l'IA sembri scrivere.
+In questi tempi l'utilizzo dell'intelligenza artificiale sta crescendo in maniera esponenziale e si sta avvicinando all'utente comune tramite la miriade di piattaforme online che sono nate, un esempio è \href{https://chat.openai.com}{ChatGPT} che ha raggiunto quota 100 milioni di utenti attivi in soli 2 mesi, raggiungendo il primato di applicazione ad uso privato con la crescita più veloce della storia.\footnote{\url{https://www.reuters.com/technology/chatgpt-sets-record-fastest-growing-user-base-analyst-note-2023-02-01/}} Nonostante il suo, come visto, uso spropositato l'IA è di fatto una tecnologia difficilmente comprensibile dalle masse; ciò porta l'utente a non capire che il \textit{chatbot} con cui sta interagendo non replichi utilizzando un principio di causalità, ma piuttosto segua dei pattern linguistici i quali non sempre portano a risposte corrette, nonostante l'autorevolezza col quale l'IA sembri scrivere.
 
 Il comitato di \ac{MPAI} si impegna ad affrontare col coinvolgimento di esperti esterni gli emergenti quesiti etici, i quali sono molto rilevanti a causa del rapido e soltanto recente sviluppo dell'IA.
 
@@ -63,7 +63,7 @@ Uno standard \ac{MPAI} è composto da un insieme di 4 documenti con i relativi s
 
 
 \section{MPAI-CAE} \label{sec:mpai-cae}
-Tra i vari standard/framework, \ac{CAE} si occupa di utilizzare le informazioni sul tipo di esperienza audio vissuta dall'utente (intrattenimento, teleconferenza, restauro, ...) e 'informazione del contesto in cui si trova (a casa, in auto, in mobilità, in studio, ...) per agire sul contenuto dell'audio in input e fornire i risultati desiderati \cite{mpaiMPAICAE}.
+Tra i vari standard/framework, \ac{CAE} si occupa di utilizzare le informazioni sul tipo di esperienza audio vissuta dall'utente (intrattenimento, teleconferenza, restauro, ...) e l'informazione del contesto in cui si trova (a casa, in auto, in mobilità, in studio, ...) per agire sul contenuto dell'audio in input e fornire i risultati desiderati \cite{mpaiMPAICAE}.
 
 Sono considerati 4 casi d'uso:
 \begin{description}
@@ -93,7 +93,7 @@ Dati in input (vedi figura \ref{fig:arp-workflow}):
 
 Si ottengono in output (vedi figura \ref{fig:arp-workflow}):
 \begin{description}
-    \item[Access Copy Files] Il file audio restaurato, una lista delle modifiche effettuate, la lista delle irregolarità con relativa classificazione e le loro istantanee dal video.
+    \item[Access Copy Files] Il file audio restaurato, una lista delle modifiche effettuate, la lista delle irregolarità con relativa classificazione e le loro istantanee dal video.   % TODO cambiare "restaurato" con "corretto nella velocità e nell'equalizzazione"?
     \item[Preservation Master Files] Il file audio di input, il file video con l'audio sostituito da quello registrato e sincronizzato, la lista delle irregolarità con relativa classificazione e le loro istantanee dal video.
 \end{description}
 
@@ -121,26 +121,26 @@ Si osserva nella letteratura afferente al \ac{CSC} che la classificazione dei pr
         \begin{subfigure}{0.8\textwidth}
             \centering
             \includegraphics[width=\textwidth]{img/confusion-matrix-audio-classification.png}
-            \caption{Matrice di confusione di classificatore audio \cite[min. 35:10]{mpaistandardsMPAIPresentsContextbased2023}}
+            \caption{Matrice di confusione di classificatore audio \cite[fig. 3.8]{spanioStudyEqualizationCurve2023}}
             \label{fig:confusion-matrix-audio-classification}
         \end{subfigure}
         \par\bigskip
         \begin{subfigure}{0.9\textwidth}
             \centering
-            \begin{subfigure}{0.45\textwidth}
+            \begin{subfigure}{0.49\textwidth}
                 \centering
                 \includegraphics[width=\textwidth]{img/confusion-matrix-video-classification-7dot5ips-tape.png}
                 \caption{Matrice di confusione di classificatore video, esperimento a velocità \qty{7,5}{ips}}
                 \label{fig:confusion-matrix-video-classification-7dot5ips-tape}
             \end{subfigure}
             \hfill
-            \begin{subfigure}{0.45\textwidth}
+            \begin{subfigure}{0.49\textwidth}
                 \centering
                 \includegraphics[width=\textwidth]{img/confusion-matrix-video-classification-15ips-tape.png}
                 \caption{Matrice di confusione di classificatore video, esperimento a velocità \qty{15}{ips}}
                 \label{fig:confusion-matrix-video-classification-15ips-tape}
             \end{subfigure}
-            \caption{Matrice di confusione di classificatore video \cite[fig. 3]{prettoComputingMethodologiesSupporting2018}}
+            \caption{Matrici di confusione di classificatore video \cite[fig. 4.11]{gravaTesiVideoAnalyser2019}}
             \label{fig:confusion-matrix-video-classification}
          \end{subfigure}
             \caption[Matrici di confusione da esperimenti in letteratura con classificatori per \ac{ARP}.]{Matrici di confusione\footnotemark da esperimenti in letteratura con classificatori per \ac{ARP}.}
