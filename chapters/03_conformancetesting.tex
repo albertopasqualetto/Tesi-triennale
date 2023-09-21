@@ -129,7 +129,7 @@ Il seguente listato ne è un esempio:
 \lstinputlisting[language=json]{listings/packager-report.json}
 
 
-\subsection{Bug ed altri problemi pre-esistenti} \label{ssec:packager-pre}  % moviepy vs ffmpeg (errori nel video e audio transcodifica in mp3), offset
+\subsection{Bugs ed altri problemi pre-esistenti} \label{ssec:packager-pre}  % moviepy vs ffmpeg (errori nel video e audio transcodifica in mp3), offset
 Prima di dedicarsi alla scrittura dei test, si è verificata la corretta funzionalità del software.
 
 Sono stati riscontrati dei problemi importanti relativi alla creazione del Preservation Audio-Visual File:
@@ -199,7 +199,7 @@ except OSError:
 \end{lstlisting}
 
 
-\subsection{Come verificare l'uguaglianza tra audio} \label{ssec:packager-audio}    % fingerprinting con chromaprint, suo wrapper in python, free software e mie contribuzioni, comunicare col mantainer
+\subsection{Come verificare l'uguaglianza tra tracce audio} \label{ssec:packager-audio}    % fingerprinting con chromaprint, suo wrapper in python, free software e mie contribuzioni, comunicare col mantainer
 Per verificare l'uguaglianza fra tracce audio, inizialmente si è provato un confronto tramite le librerie \textit{hashlib} o \textit{filecmp}, ma entrambi i test non hanno avuto successo perchè in alcuni casi non è richiesto di verificare che il file sia lo stesso identico (stesso hash), ma piuttosto di controllare che il suono sia il medesimo.\footnote{La differenza si osserva, per esempio, quando si hanno 2 file, uno scostato di qualche secondo rispetto all'altro; questo è ciò che accade nel caso in esame quando si esegue la sincronizzazione audio/video.}
 
 La soluzione trovata si basa sulla libreria \href{https://acoustid.org/chromaprint}{chromaprint}\footnote{chromaprint è la libreria che è alla base del progetto AcoustID, utilizzato nel piuttosto famoso software \href{https://musicbrainz.org/}{MusicBrainz} (\href{https://picard.musicbrainz.org/}{Picard}) che serve a taggare le proprie tracce musicali.}, la quale permette di ricavare un'impronta digitale (\textit{fingerprint}) a partire da una traccia audio in maniera da poi confrontare due impronte tra loro per ottenere una misura della somiglianza tra le rispettive tracce.    % TODO taggare va bene?
@@ -241,13 +241,13 @@ La libreria pyacoustid, nelle prime fasi di scrittura dei test, non era ancora c
      return _match_fingerprints(a, b)
 \end{lstlisting}
 
-Per applicare queste modifiche è stato necessario effettuare una \href{https://github.com/beetbox/pyacoustid/pull/78}{\ac{PR}}\footnote{Una \ac{PR} è una richiesta ai manutentori del codice di aggiungerne di proprio per implementare nuove funzioni o per correggere dei problemi.} sulla repository ufficiale a cui ha seguito uno scambio di messaggi con il manutentore e l'implementatore del codice; questa è una pratica comune nel mondo del software libero, il quale, tra i vari vantaggi, permette di leggere il codice sorgente e contribuire con dei miglioramenti alle tecnologie che si utilizzano.\footnote{\url{https://opensource.guide/how-to-contribute/\#improve-software-you-rely-on}}
-Si è contribuito a pyacoustid anche con \href{https://github.com/beetbox/pyacoustid/pull/79}{un'altra \ac{PR}} che permette l'utilizzo della libreria anche in Windows, la quale è stata implementata collaborando col manutentore.
+Per applicare queste modifiche è stato necessario effettuare una \ac{PR}\footnote{Una \ac{PR} è una richiesta ai manutentori del codice di aggiungerne di proprio per implementare nuove funzioni o per correggere dei problemi.} sulla repository ufficiale a cui ha seguito uno scambio di messaggi con il manutentore e l'implementatore del codice;\footnote{URL della \ac{PR}: \url{https://github.com/beetbox/pyacoustid/pull/78}} questa è una pratica comune nel mondo del software libero, il quale, tra i vari vantaggi, permette di leggere il codice sorgente e contribuire con dei miglioramenti alle tecnologie che si utilizzano.\footnote{\url{https://opensource.guide/how-to-contribute/\#improve-software-you-rely-on}}
+Si è contribuito a pyacoustid anche con un'altra \ac{PR} che permette l'utilizzo della libreria anche in Windows, la quale è stata implementata collaborando col manutentore.\footnote{URL della \ac{PR}: \url{https://github.com/beetbox/pyacoustid/pull/79}}
 
 Ora la versione presente su PyPi è la 1.3.0, contenente tutte le modifiche citate.
 
 
-\subsection{Come verificare l'uguaglianza tra video} \label{ssec:packager-video}    % ffmpeg e psnr
+\subsection{Come verificare l'uguaglianza tra flussi video} \label{ssec:packager-video}    % ffmpeg e psnr
 Per verificare l'uguaglianza tra gli stream video è stato utilizzato il \ac{PSNR} medio tra i frame dei 2 video, calcolato tramite FFmpeg.\footnote{\url{https://ffmpeg.org/ffmpeg-all.html\#psnr}}
 
 Il \ac{PSNR} è una misura di qualità di un'immagine compressa rispetto all'originale; viene definito come il rapporto tra la massima potenza di un segnale (immagine originale) e la potenza del rumore rispetto alla sua rappresentazione (immagine compressa).
@@ -274,8 +274,8 @@ Come si può osservare dal codice, è stato individuato un \ac{PSNR} soglia di \
 Esistono altri metodi per comparare dei video e tra questi vi sono il \ac{SSIM} oppure, ancora una volta, qualche algoritmo di fingerprinting, ma si è visto che il \ac{PSNR} è funzionale allo scopo ed è il più rapido ad essere eseguito; il codice potrebbe essere migliorato per avere più certezza dell'uguaglianza, ma questo non è un problema semplice considerando che i video in questione sono identici a meno di un'eventuale taglio della parte iniziale, un'idea potrebbe essere quella di calcolare il \ac{PSNR} a ritroso e considerando i video solo per la durata del più breve, ciò però non considererebbe il caso limite di file diversi con la parte terminale in comune.
 
 
-\subsection{Pulizia/reformat del codice della libreria} \label{ssec:packager-post}  % principio DRY, docstrings, unit tests, compatiblità Windows ma esecuzione docker
-A termine del lavoro è stato eseguito un reformat del codice della libreria ricalcando lo stile del \ac{TDD}.
+\subsection{Refactoring del codice della libreria} \label{ssec:packager-post}  % principio DRY, docstrings, unit tests, compatiblità Windows ma esecuzione docker
+A termine del lavoro è stato eseguito un refactoring del codice della libreria ricalcando lo stile del \ac{TDD}.
 Si è cercato di seguire il principio \ac{DRY}, ovvero di limitare la ridondanza del codice creando delle funzioni autoesplicative per ogni macro azione del codice.
 Facendo ciò si è limitata la ridondanza sia all'interno dello stesso file, sia si è rimossa la duplicazione tra client e server, che ora utilizzano entrambi le funzioni di una libreria condivisa.
 
@@ -419,11 +419,11 @@ Si nota che la specifica \verb|^0.3.0| (basata sul \href{https://semver.org/lang
 Infine nel codice dei test si dovrà fronteggiare il fatto che, in maniera incorretta, nel video analyser si utilizzano come divisore tra secondi e millisecondi i due punti (:) (si può vedere nei file \verb|*_IrregularityFileOutputN.json|), quindi, alla lettura di file contenenti irregolarità provenienti dal video analyser, si dovranno applicare delle soluzioni per aggirare il problema ed inoltre si vedranno fallire i test che chiedono di verificare la sintassi dello schema JSON nel caso contengano le irregolarità già citate.
 
 
-\subsection{Come verificare che l'offset scelto è abbastanza vicino a quello reale} \label{ssec:audioanalyser-offset}   % formula fornita + ffprobe
-Nella tabella di valutazione \ref{tab:audioanalyser-valutazione} al punto 1.c viene richiesto di controllare che lo scostamento calcolato dall'Audio Analyser sia compatibile con quello reale, fornito nel dataset 5.
+\subsection{Come verificare che l'offset calcolato sia compatibile con quello reale} \label{ssec:audioanalyser-offset}   % formula fornita + ffprobe
+Nella tabella di valutazione \ref{tab:audioanalyser-valutazione} al punto 1.c viene richiesto di controllare che lo scostamento calcolato dall'Audio Analyser sia sufficientemente vicino quello reale, fornito nel dataset 5.
 Per fare ciò si richiede che la differenza in valore assoluto tra i 2 offset sia minore del tempo necessario a mostrare 3 frame del Preservation Audio-Visual File in millisecondi e si calcola tramite la seguente disuguaglianza:
 \begin{equation}
-    |O_c - O_r| < 3 \times \lceil\frac{1000}{FPS_{DS3}}\rceil ms
+    |O_c - O_r| < 3 \times \big\lceil\frac{1000}{FPS_{DS3}}\big\rceil ms
 \end{equation}
 dove $O_c$ è l'offset calcolato, $O_r$ è l'offset reale e $FPS_{DS3}$ sono gli FPS del Preservation Audio-Visual File.
 
@@ -455,7 +455,7 @@ def test_offset_difference(files_name: str):
 \end{lstlisting}
 
 
-\subsection{Come verificare che i file siano wav} \label{ssec:audioanalyser-wav}    % RF64 ma in realtà va bene wav; libreria filetype, magic numbers, MIME
+\subsection{Come verificare che dei file siano in formato WAV} \label{ssec:audioanalyser-wav}    % RF64 ma in realtà va bene wav; libreria filetype, magic numbers, MIME
 Nella tabella \ref{tab:audioanalyser-valutazione} al punto 1.d viene richiesto di controllare che i segmenti audio estratti dall'Audio Analyser siano in formato RF64: un formato compatibile col WAV; in realtà in questo caso è sufficiente verificare che tali segmenti siano in formato WAV.
 
 Per fare ciò è stata utilizzata la libreria Python \href{https://github.com/h2non/filetype.py}{filetype} che legge i magic numbers: delle stringhe costanti nell'header di un file utilizzati per identificarne la tipologia.
@@ -548,42 +548,46 @@ Ciò che è richiesto e che si basa sul codice appena citato, invece, è di cont
 \section{Parallelizzare o no? confronto di velocità} \label{sec:parallelizzazione}
 Il plugin di pytest \href{https://pytest-xdist.readthedocs.io/}{pytest-xdist}, già citato nella sottosezione \ref{ssec:pytest}, permette di parallelizzare l'esecuzione dei test.
 
-I test di conformità sono stati eseguiti più volte su una macchina Windows 11 con una CPU Intel i7-1165G7 e 16 GB di RAM DDR4 a 3200 MHz, sia in modalità sequenziale, sia abilitando la parallelizzazione mediante l'opzione \texttt{-n auto} (numero di workers uguale al numero di CPUs disponibili) inserita nei files \texttt{pytest.ini} e si è osservato innanzitutto che la maggior parte del tempo utilizzato consiste nell'esecuzione dell'\ac{AIM} ed inoltre che, seppur di poco, l'esecuzione sequenziale è sempre più veloce di quella parallela sia in Packager che in Audio Analyser. Per questo motivo si è scelto di tenere la parallelizzazione disabilitata.
-Una rappresentazione dei dati è presente in figura \ref{fig:test-grafici-tempo}.
-% TODO fare test e mostrare dati
+I test di conformità sono stati eseguiti più volte su una macchina Windows 11 con una CPU Intel i7-1165G7 e 16 GB di RAM DDR4 a 3200 MHz, sia in modalità sequenziale, sia abilitando la parallelizzazione mediante l'opzione \texttt{-n auto} (numero di workers uguale al numero di CPUs disponibili) inserita nei files \texttt{pytest.ini} e si è osservato innanzitutto che gran parte del tempo utilizzato consiste nell'esecuzione dell'\ac{AIM} (grafici \ref{fig:grafico-distribuzione-tempo-packager} e \ref{fig:grafico-distribuzione-tempo-audioanalyser}), i quali non sono affetti dall'abilitazione della parallelizzazione ed inoltre che non c'è un vantaggio tangibile ad abilitarla perché la differenza di durata tra le due modalità è spesso quasi nulla.
+Nel caso del Packager, come si osserva nel grafico in figura \ref{fig:grafico-parallelo-vs-sequenziale-packager}, i tempi di esecuzione sono comparabili, sebbene si noti una tendenza ad ottenere tempi leggermente minori con l'esecuzione in parallelo, come si può notare anche nel grafico \ref{fig:grafico-distribuzione-tempo-packager}. Per quanto concerne l'Audio Analyser, invece, si osserva nel grafico \ref{fig:grafico-distribuzione-tempo-audioanalyser} che più del 99\% della durata totale è occupata dall'esecuzione dell'\ac{AIM} stesso e che il tempo di esecuzione dei test è nell'ordine del secondo; in questo periodo così ridotto il tempo richiesto per generare e gestire i worker è decisamente rilevante, infatti si osserva che il tempo di esecuzione più che raddoppia in media abilitando la parallelizzazione. 
+Una rappresentazione dei dati è presente in figura \ref{fig:test-grafici-tempo}.\footnote{Dati grezzi: \url{https://github.com/albertopasqualetto/Tesi-triennale/blob/main/Notebooks/res/pkg_timings.json}, \url{https://github.com/albertopasqualetto/Tesi-triennale/blob/main/Notebooks/res/aa_timings.json};\\
+grafici e calcoli eseguiti nel notebook Python: \url{https://github.com/albertopasqualetto/Tesi-triennale/blob/main/Notebooks/create_graphs.ipynb}}
+
 \begin{figure}[h]
      \centering
-     \begin{subfigure}{0.45\textwidth}
+     \begin{subfigure}{0.49\textwidth}
          \centering
-         \includegraphics[width=\textwidth]{example-image-a}
-         \caption{Distribuzione dei tempi tra setup (esecuzione \ac{AIM}), tests e teardown; \ac{AIM} Packager}
+         \includegraphics[width=\textwidth]{img/packager-stacked-bar-graph.png}
+         \caption{Distribuzione dei tempi tra setup (esecuzione \ac{AIM}), tests e teardown (pulizia files); \ac{AIM} Packager}
          \label{fig:grafico-distribuzione-tempo-packager}
      \end{subfigure}
      \hfill
-     \begin{subfigure}{0.45\textwidth}
+     \begin{subfigure}{0.49\textwidth}
          \centering
-         \includegraphics[width=\textwidth]{example-image-a}
-         \caption{Divisione dei tempi tra setup (esecuzione \ac{AIM}), tests e teardown; \ac{AIM} Audio Analyser}
+         \includegraphics[width=\textwidth]{img/audioanalyser-stacked-bar-graph.png}
+         \caption{Divisione dei tempi tra setup (esecuzione \ac{AIM}), tests e teardown (pulizia files); \ac{AIM} Audio Analyser}
          \label{fig:grafico-distribuzione-tempo-audioanalyser}
      \end{subfigure}
      \par\bigskip
-     \begin{subfigure}{0.45\textwidth}
+     \begin{subfigure}{0.49\textwidth}
          \centering
-         \includegraphics[width=\textwidth]{example-image-a}
-         \caption{Esecuzione parallela vs sequenziale; \ac{AIM} Packager}
+         \includegraphics[width=\textwidth]{img/packager-scatter-parallelization.png}
+         \caption{Tempo di esecuzione, parallelo vs sequenziale; \ac{AIM} Packager}
          \label{fig:grafico-parallelo-vs-sequenziale-packager}
      \end{subfigure}
      \hfill
-     \begin{subfigure}{0.45\textwidth}
+     \begin{subfigure}{0.49\textwidth}
          \centering
-         \includegraphics[width=\textwidth]{example-image-a}
-         \caption{Esecuzione parallela vs sequenziale; \ac{AIM} Audio Analyser}
+         \includegraphics[width=\textwidth]{img/audioanalyser-scatter-parallelization.png}
+         \caption{Tempo di esecuzione, parallelo vs sequenziale; \ac{AIM} Audio Analyser}
          \label{fig:grafico-parallelo-vs-sequenziale-audioanalyser}
      \end{subfigure}
-        \caption{Tempi di esecuzione dei test}
+        \caption{Tempi di esecuzione dei test eseguiti sui dataset relativi a 2 nastri}
         \label{fig:test-grafici-tempo}
 \end{figure}
 
+Si è scelto di disabilitare la parallelizzazione a causa degli scarsi risultati ottenuti con essa abilitata e per consentire l'utilizzo dei CPU cores, ora liberi, agli altri programmi.
+Ciò non toglie che con un numero maggiore di pacchetti di dataset, la parallelizzazione potrebbe diventare più rilevante in termini di tempo e che si potrebbe considerare di supportarla anche nella fase di esecuzione dell'\ac{AIM} che, come visto, è molto rilevante nel computo totale di tempo utilizzato.
 
 
 \section{Libreria \texttt{mpai-cae-arp}} \label{sec:lib-mpaicaearp} % a cosa serve
@@ -592,7 +596,7 @@ Per via della sua ampia influenza, alcuni problemi relativi a questa libreria so
 % TODO scrivere altro?
 
 
-\subsection{Bug: Pydantic} \label{ssec:mpaicaearp-pydantic}    % che ha portato a dover aggiornare i moduli
+\subsection{I problemi di Pydantic} \label{ssec:mpaicaearp-pydantic}    % che ha portato a dover aggiornare i moduli
 È stato risolto un problema relativo all'uso non univoco di \href{https://docs.pydantic.dev/1.10/}{Pydantic}, il suo scopo principale all'interno di \ac{ARP} è quello di fornire alias corrispondenti alla nomenclatura richiesta dalle specifiche tecniche per i parametri delle funzioni in maniera tale da utilizzare il nome dell'alias per l'output verso file (\texttt{EditingList.json}, \verb|*_IrregularityFileOutputN.json|, \dots); in precedenza l'utilizzo del nome del parametro o del suo alias non era regolato e questo ha portato a degli errori che impedivano la corretta esecuzione del software.
 La risoluzione applicata consiste nell'utilizzo di \verb|serialization_alias| al posto di \texttt{alias}, dato l'utilizzo primario degli alias.
 
@@ -601,17 +605,17 @@ Contestualmente, per favorire l'utilizzabilità nel futuro dell'applicativo, olt
 Queste modifiche implicano il dover migrare \ac{ARP}, modificando i nomi dei campi utilizzati in tutti gli \acp{AIM} ed impedendo la retrocompatibilità.
 
 
-\subsection{Bug: formatting incorretto delle EditingList scritte su file} \label{ssec:mpaicaearp-formato-editinglist}
+\subsection{Bugfix: formato incorretto delle EditingList scritte su file} \label{ssec:mpaicaearp-formato-editinglist}
 Un bug presente nel codice di questa libreria salvava nel filesystem dei file con una formattazione errata, un esempio ne è l'\texttt{EditingList.json} che veniva salvato nella seguente maniera:
 \lstinputlisting[language=json, caption={\texttt{EditingList.json} salvato tramite la precedente modalità, contiene solo una stringa}]{listings/EditingList-badformat.json}
-Il JSON di cui sopra è formato da una sola stringa che contiene la rappresentazione dell'oggetto Python ed i caratteri di escape mostrati, ciò portava al fallimento del relativo test di conformità del Packager (\ref{sec:test-packager}).
+Il JSON di cui sopra è composto da una sola stringa che contiene la rappresentazione dell'oggetto Python ed i caratteri di escape mostrati, ciò portava al fallimento del relativo test di conformità del Packager (\ref{sec:test-packager}).
 
 Il problema risiedeva nella chiamata di \texttt{json.dump} sulla stringa contenente l'oggetto da salvare in JSON generata da \texttt{model.json} (in Pydantic V2 chiamata \verb|model.model_dump_json|), questo comportamento probabilmente non era chiaro all'autore di questo codice per via del suo nome fuorviante; utilizzando, invece, la funzione di Pydantic V2 \verb|model.model_dump|, chiamata con parametro \texttt{mode='json'} per abilitare la serializzazione degli oggetti presenti nei campi della classe, si ottiene un dizionario Python che può essere scritto correttamente su file JSON (in Pydantic V1 la funzione corrispondente sarebbe stata \texttt{model.dict}, ma essa non fornisce la possibilità di serializzare gli oggetti).
 Ora il file precedente appare correttamente come:
 \lstinputlisting[language=json, caption={\texttt{EditingList.json} salvato tramite l'attuale modalità, contiene il dizionario con i suoi valori serializzati}]{listings/EditingList-goodformat.json}
 
 
-\subsection{Bug: test di \texttt{AudioWave} a singolo canale non funzionante e fix di \texttt{get\_channel}} \label{ssec:mpaicaearp-audiowave}  % e fare riferimento a dtype del suo buffer nominato sopra
+\subsection{Bugfix: oggetti \texttt{AudioWave} non funzionanti, overflow e problemi con tracce a singolo canale} \label{ssec:mpaicaearp-audiowave}  % e fare riferimento a dtype del suo buffer nominato sopra
 La problematica di overflow limitata ai sistemi Windows descritta alla sottosezione \ref{ssec:audioanalyser-pre} è stata corretta col seguente codice:
 \begin{lstlisting}[language=diff]
 @@ -202,7 +202,7 @@ class AudioWave:
@@ -624,7 +628,7 @@ La problematica di overflow limitata ai sistemi Windows descritta alla sottosezi
   return AudioWave(data, bit, channels, samplerate)
 \end{lstlisting}
 
-Questo, però, non era l'unico problema della classe AudioWave, infatti non erano supportate le tracce a singolo canale dato che l'indicizzazione di NumPy (operatore \texttt{[]}) non permette di operare su un array 1D come se fossero multidimensionali (ad esempio indicando il primo canale con \texttt{array[:,1]}).
+Questo, però, non era l'unico problema della classe AudioWave, infatti non erano supportate le tracce a singolo canale dato che l'indicizzazione di NumPy (operatore \texttt{[ ]}) non permette di operare su un array 1D come se fossero multidimensionali (ad esempio indicando il primo canale con \texttt{array[:,1]}).
 \begin{lstlisting}[language=diff]
 @@ -369,39 + 369, 43 @@ class AudioWave:
   def get_channel(self, channel: int):
