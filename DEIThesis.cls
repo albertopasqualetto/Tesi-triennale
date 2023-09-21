@@ -37,7 +37,7 @@
 \RequirePackage[T1]{fontenc}
 \RequirePackage[italian]{babel}
 
-
+\hyphenpenalty=500
 
 % -- USEFUL PACKAGES --
 
@@ -54,12 +54,14 @@
 % footnotes
 \RequirePackage{footnote}
 \RequirePackage[bottom]{footmisc}
+
 \newcommand{\mpfootnotes}[1][1]{
   \renewcommand{\thempfootnote}{\thefootnote}
   \addtocounter{footnote}{-1}
   \addtocounter{footnote}{#1}
   \renewcommand{\footnote}{\stepcounter{footnote}\footnotetext[\value{footnote}]}
 }
+
 \interfootnotelinepenalty=10000
 
 % mathematics
@@ -71,7 +73,7 @@
 % \RequirePackage{url}
 
 % colors
-\RequirePackage{color}
+\RequirePackage{xcolor}
 
 % graphics
 \RequirePackage{graphicx}
@@ -87,6 +89,8 @@
 % plots, drawings etc...
 \RequirePackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+
+\RequirePackage{tabularx}
 
 % references
 \RequirePackage[autostyle]{csquotes}
@@ -550,10 +554,10 @@
     morecomment=[f][\color{diffrem}]{-\ },
 }
 
-\definecolor{jsondelim}{RGB}{178,20,20}
-\definecolor{jsonnum}{RGB}{60, 32, 110}
-\definecolor{jsonstring}{RGB}{0.64,0.08,0.08}
-\definecolor{jsoncomment}{RGB}{169,169,169}
+\definecolor{jsondelim}{RGB}{20, 142, 193}
+\definecolor{jsonnum}{RGB}{92, 51, 154}
+\definecolor{jsonstring}{RGB}{163, 20, 20}
+\definecolor{jsoncomment}{RGB}{169, 169, 169}
 
 \lstdefinelanguage{json}{
     basicstyle=\linespread{0.9}\ttfamily\footnotesize,

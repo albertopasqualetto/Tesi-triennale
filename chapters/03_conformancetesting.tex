@@ -2,66 +2,48 @@
 
 \chapter{Conformance Testing} \label{chp:conformancetesting}    % a che serve, con specifica ambiente di sviluppo (python, poetry, git, gitlab DEI)
 I test di conformità, come anticipato nella sezione \ref{sec:standard-mpai}, sono un insieme di attività di verifica che determinano l'aderenza di un processo, prodotto o servizio a dei requisiti tecnici o a delle norme.
-Nel caso in esame, \ac{ARP}, si tratta di verificare che il suo funzionamento segua, entro certi limiti (necessari anche perchè è una IA), le specifiche tecniche. In \ac{MPAI}, questi test, sono definiti all'interno di un documento apposito.
+Nel caso in esame, \ac{ARP}, si tratta di verificare che il suo funzionamento segua, entro certi limiti (necessari anche perchè è una \acs{IA}), le specifiche tecniche. In \ac{MPAI}, questi test, sono definiti all'interno di un documento apposito.
 
 L'obiettivo di questa tesi è quella di scrivere il codice dei test di conformità, basandosi sul documento che li descrive fornito da MPAI.
 
-L'ambiente di sviluppo è un ambiente virtuale di \href{https://python-poetry.org/}{Poetry} basato su Python 3.10 (poi aggiornato a 3.11)\footnote{Vedi sezione \ref{ssec:py-311}}, su una macchina Windows 11 (per alcuni confronti, occasionalmente è stata utilizzata una macchina virtuale con Ubuntu 20.04.6 LTS). L'ambiente di produzione è un server Docker con container linux.\footnote{Per questo motivo l'implementazione del CSC ha anche una modalità di esecuzione come server con protocollo gRPC, utilizzato per fare comunicare i vari \acp{AIM} tra loro.} Per il versionamento del software viene usato \href{https://git-scm.com/}{git}, utilizzando come server il \href{https://gitlab.dei.unipd.it/}{GitLab del \ac{DEI}}.\footnote{Le repositories rilvanti ai fini di questo documento sono: \href{https://gitlab.dei.unipd.it/mpai/packager}{\ac{AIM} Packager}; \href{https://gitlab.dei.unipd.it/mpai/audio-analyzer}{\ac{AIM} Audio Analyser}; \href{https://gitlab.dei.unipd.it/mpai/mpai-cae-arp}{libreria mpai-cae-arp}.}
+L'ambiente di sviluppo è un ambiente virtuale di \href{https://python-poetry.org/}{Poetry} basato su Python 3.10 (poi aggiornato a 3.11)\footnote{Vedi sezione \ref{ssec:mpaicaearp-aggiornamenti}.}, su una macchina Windows 11 (per alcuni confronti, occasionalmente è stata utilizzata una macchina virtuale con Ubuntu 20.04.6 LTS). L'ambiente di produzione è un server Docker con container Linux.\footnote{Per questo motivo l'implementazione del \ac{CSC} ha anche una modalità di esecuzione come server con protocollo \href{https://grpc.io/}{gRPC}, utilizzato per la comunicazione con i vari \acp{AIM}.} Per il versionamento del software viene usato \href{https://git-scm.com/}{git}, utilizzando come server l'installazione \href{https://gitlab.dei.unipd.it/}{GitLab del \ac{DEI}}.\footnote{Le repositories rilvanti ai fini di questo documento sono: \href{https://gitlab.dei.unipd.it/mpai/packager}{\ac{AIM} Packager}; \href{https://gitlab.dei.unipd.it/mpai/audio-analyzer}{\ac{AIM} Audio Analyser}; \href{https://gitlab.dei.unipd.it/mpai/mpai-cae-arp}{libreria mpai-cae-arp}.}
 
 
 \section{Tests e \acl{TDD}} \label{sec:tests-tdd}
 Il software testing è il processo di valutazione e verifica del corretto funzionamento di un prodotto software rispetto alle aspettative; la creazione di test suites ha l'obiettivo di rilevare bug prima di rilasciare il prodotto.
 Solitamente si tende ad automatizzare i test attraverso alcuni framework in modo tale da poterli eseguire ad ogni modifica del codice.
 
-Il \acfi{TDD} è un approccio allo sviluppo di software che prevede la scrittura dei test prima di quella del codice ai quali deve esserne sottoposto; inoltre i test sono da ripetere man mano che il software viene sviluppato.
+Il \acfi{TDD} è un approccio allo sviluppo di software che prevede la scrittura dei test prima di quella del codice ai quali deve essere sottoposto; inoltre i test vanno ripetuti parallelamente allo sviluppo del software.
 I test di conformità sono il documento ed i test stessi che l'implementazione software delle specifiche tecniche dovranno rispettare, quindi la loro scrittura e comunque una correzione del codice basandosi su di essi può essere riconosciuta come un approccio di \ac{TDD}. % TODO vedere se dare più importanza
 
 
 \subsection{Pytest} \label{ssec:pytest} % funzionamento/utlità, xdist per parallelizzare, json-report per scrivere il report richiesto, fixtures per eseguire funzione per ogni file
-Uno dei framework per il testing in Python più popolari è \href{https://pytest.org}{pytest}, esso permette di ottenere informazioni dettagliate sul fallimento degli \texttt{assert} statements\footnote{\texttt{assert} è la parola chiave che permette di effettuare i test, nello specifico il test procede se i suoi parametri sono \texttt{True}, mentre viene lanciato \texttt{AssertionError} se i suoi parametri sono \texttt{False}.}, di avere fixtures\footnote{Una \textit{fixture} è un elemento del software testing che viene utilizzato per definire un contesto per l'esecuzione di uno (o più) test.} modulari e di essere compatibile con numerosi plugin esterni.
+Uno dei framework per il testing in Python più popolari è \href{https://pytest.org}{pytest}, esso permette di ottenere informazioni dettagliate sul fallimento degli \texttt{assert} statements\footnote{\texttt{assert} è la parola chiave che permette di effettuare i test, nello specifico il test procede se il suo parametro è \texttt{True}, mentre viene lanciato \texttt{AssertionError} ed il test fallisce se il suo parametro è \texttt{False}.}, di avere fixtures\footnote{Una \textit{fixture} è un elemento del software testing che viene utilizzato per definire un contesto per l'esecuzione di uno (o più) test.} modulari e di essere compatibile con numerosi plugin esterni.
 
 \href{https://github.com/numirias/pytest-json-report}{pytest-json-report} è un plugin che è stato utilizzato per creare i report richiesti come output del conformance testing in formato JSON.
 
-\href{https://pytest-xdist.readthedocs.io/}{pytest-xdist} è un plugin che è stato utilizzato per parallelizzare l'esecuzione (vedi sezione \ref{sec:parallelizzazione}
+\href{https://pytest-xdist.readthedocs.io/}{pytest-xdist} è un plugin che è stato utilizzato per parallelizzare l'esecuzione (vedi sezione \ref{sec:parallelizzazione} per il suo utilizzo).
 
 Sono state utilizzate delle fixture per definire l'ambiente di test e per ottenere delle cartelle di test (\verb|pytest_sessionstart|, \verb|pytest_sessionfinish| e \verb|tmp_path|), inoltre è stata parametrizzata l'esecuzione delle varie funzioni di test in modo tale da essere eseguite per ogni documento digitalizzato tramite il decoratore \texttt{@pytest.mark.parametrize}.
 
 
-\section{\acs{CAE}-\acs{ARP} packager} \label{sec:test-packager}
-Il primo \ac{AIM} preso in esame è stato il packager.
+\section{\acs{CAE}-\acs{ARP} Packager} \label{sec:test-packager}
+Il primo \ac{AIM} preso in esame è stato il Packager.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{img/packager.png}
     \caption{\ac{ARP} Packager}
     \label{fig:packager}
 \end{figure}
 
-% \begin{table}[h]
-%     \centering
-%     \begin{tabular}{|c|c|}
-%         \hline
-%         \textbf{Input data}             &   \textbf{Output Data}\\
-%         \hline
-%         Preservation Audio File         &   Access Copy Files\\
-%         Preservation Audio-Visual File  &   Preservation Master Files\\
-%         Restored Audio Files            &   \\
-%         Editing List                    &   \\
-%         Irregularity File               &   \\
-%         Irregularity Images             &   \\
-%         \hline
-%     \end{tabular}
-%     \caption{I/O di \ac{ARP} Packager}
-%     \label{tab:packager-io}
-% \end{table}
+Il Packager, come anticipato nella sottosezione \ref{ssec:mpai-cae-arp}, è l'ultimo \ac{AIM} ad essere eseguito e si occupa di raccogliere tutti i file elaborati e di restituire in uscita all'\ac{AIW} una cartella con la copia d'accesso dei file ed una con i file grezzi accompagnati da tutte le irregolarità trovate, vedi schema in figura \ref{fig:packager}.
 
-Il packager, come anticipato nella sottosezione \ref{ssec:mpai-cae-arp}, è l'ultimo \ac{AIM} ad essere eseguito e si occupa di raccogliere tutti i file elaborati e di restituire in uscita all'\ac{AIW} una cartella con la copia d'accesso dei file ed una con i file grezzi accompagnati da tutte le irregolarità trovate, vedi schema in figura \ref{fig:packager}.
+Viene riportata la descrizione definita da \ac{MPAI} dei conformance tests da seguire nella tabella \ref{tab:packager-valutazione}.\footnote{Estratta dalla versione WD 0.15.2 del documento MPAI Conformance Testing per \ac{CAE}.} 
 
-Viene riportata la descrizione dei conformance tests da seguire, definita da MPAI, nella tabella \ref{tab:packager-valutazione}.\footnote{Estratta dalla versione WD 0.15.2 del documento MPAI Conformance Testing per \ac{CAE}.} 
-
-\begin{table}[h]
+\begin{table}[H]
     \centering
-    \begin{tabular}{|p{0.2\textwidth}|p{0.8\textwidth}|}
+    \begin{tabular}{|p{0.25\textwidth}|p{0.75\textwidth}|}
         \hline
         \textbf{Means}   &   \textbf{Actions}\\
         \hline
@@ -91,56 +73,54 @@ Viene riportata la descrizione dei conformance tests da seguire, definita da MPA
     \label{tab:packager-valutazione}
 \end{table}
 
-Ad ogni esecuzione dei test è richiesto di inserire i dati nella tabella \ref{tab:packager-report}.
+Ad ogni esecuzione dei test è richiesto di inserire i dati nel report mostrato in tabella \ref{tab:packager-report}.
 \begin{table}[H]
     \centering
-    \begin{adjustbox}{max width=\textwidth}
-        \begin{tabular}{|c|c|}
-            
+    \begin{tabularx}{\textwidth}{|p{0.25\textwidth}|X|}
+        
+        \hline
+        \textbf{Conformance Tester ID}                      &   Unique Conformance Tester Identifier assigned by MPAI\\
+        \hline
+        \textbf{Standard, Use Case ID and Version}          &   Standard ID and Use Case ID, Version and Profile of the standard in the form “CAE:ARP:1:0”.\\
+        \hline
+        \textbf{Name of AIM}                                &   Packager\\
+        \hline
+        \textbf{Implementer ID}                             &   Unique Implementer Identifier assigned by MPAI Store.\\
+        \hline
+        \textbf{AIM Implementation Version}                 &   Unique Implementation Identifier assigned by Implementer.\\
+        \hline
+        \textbf{Neural Network Version (optional)}          &   Unique Neural Network Identifier assigned by Implementer.\\
+        \hline
+        \textbf{Identifier of Conformance Testing Dataset}  &   Unique Dataset Identifier assigned by MPAI Store.\\
+        \hline
+        \textbf{Test ID}                                    &   Unique Test Identifier assigned by Conformance Tester.\\
+        \hline
+        \textbf{Actual output}                              &   Actual output provided as a matrix of n rows containing output assertions.\\
+                                                            &   \begin{adjustbox}{max width=0.7\textwidth} \begin{tabular}{|c|c|c|c|c|}
             \hline
-            \textbf{Conformance Tester ID}                      &   Unique Conformance Tester Identifier assigned by MPAI\\
+            Output                      &   Files                           &   1   &   \dots   &   n\\
             \hline
-            \textbf{Standard, Use Case ID and Version}          &   Standard ID and Use Case ID, Version and Profile of the standard in the form “CAE:ARP:1:0”.\\
+            Access Copy Files           &   Restored Audio Files            &   T/F &   \dots   &   T/F\\
+                                        &   Editing List                    &   T/F &   \dots   &   T/F\\
+                                        &   Irregularity File               &   T/F &   \dots   &   T/F\\
+                                        &   Irregularity Images             &   T/F &   \dots   &   T/F\\
             \hline
-            \textbf{Name of AIM}                                &   Packager\\
+            Preservation Master Files   &   Preservation Audio File         &   T/F &   \dots   &   T/F\\
+                                        &   Preservation Audio Visual File  &   T/F &   \dots   &   T/F\\
+                                        &   Irregularity File               &   T/F &   \dots   &   T/F\\
+                                        &   Irregularity Images             &   T/F &   \dots   &   T/F\\
             \hline
-            \textbf{Implementer ID}                             &   Unique Implementer Identifier assigned by MPAI Store.\\
-            \hline
-            \textbf{AIM Implementation Version}                 &   Unique Implementation Identifier assigned by Implementer.\\
-            \hline
-            \textbf{Neural Network Version (optional)}          &   Unique Neural Network Identifier assigned by Implementer.\\
-            \hline
-            \textbf{Identifier of Conformance Testing Dataset}  &   Unique Dataset Identifier assigned by MPAI Store.\\
-            \hline
-            \textbf{Test ID}                                    &   Unique Test Identifier assigned by Conformance Tester.\\
-            \hline
-            \textbf{Actual output}                              &   Actual output provided as a matrix of n rows containing output assertions.\\
-                                                                &   \begin{tabular}{|c|c|c|c|c|}
-                \hline
-                Output                      &   Files                           &   1   &   \dots   &   n\\
-                \hline
-                Access Copy Files           &   Restored Audio Files            &   T/F &   \dots   &   T/F\\
-                                            &   Editing List                    &   T/F &   \dots   &   T/F\\
-                                            &   Irregularity File               &   T/F &   \dots   &   T/F\\
-                                            &   Irregularity Images             &   T/F &   \dots   &   T/F\\
-                \hline
-                Preservation Master Files   &   Preservation Audio File         &   T/F &   \dots   &   T/F\\
-                                            &   Preservation Audio Visual File  &   T/F &   \dots   &   T/F\\
-                                            &   Irregularity File               &   T/F &   \dots   &   T/F\\
-                                            &   Irregularity Images             &   T/F &   \dots   &   T/F\\
-                \hline
-            \end{tabular}\\
-                                                                &   Final assertion: T/F\\
-            \hline
-            \textbf{Execution time (optional)}                  &   Duration of test execution\\
-            \hline
-            \textbf{Test comment (optional)}                    &   Comments on test results and possible needed actions.\\
-            \hline
-            \textbf{Test Date}                                  &   yyyy/mm/dd.\\
-            \hline
-        \end{tabular}
-    \end{adjustbox}
-    \caption{Report da compilare ad ogni esecuzione del packager.}
+        \end{tabular} \end{adjustbox}\\
+                                                            &   Final assertion: T/F\\
+        \hline
+        \textbf{Execution time (optional)}                  &   Duration of test execution\\
+        \hline
+        \textbf{Test comment (optional)}                    &   Comments on test results and possible needed actions.\\
+        \hline
+        \textbf{Test Date}                                  &   yyyy/mm/dd.\\
+        \hline
+    \end{tabularx}
+    \caption{Report da compilare ad ogni esecuzione del packager}
     \label{tab:packager-report}
 \end{table}
 Viene creato automaticamente il report sotto forma di file JSON contenente le informazioni conosciute dal software anche grazie all'aiuto della libreria \href{https://github.com/numirias/pytest-json-report}{pytest-json-report} che raccoglie i risultati dei test in un formato machine-readable.
@@ -152,9 +132,9 @@ Il seguente listato ne è un esempio:
 \subsection{Bug ed altri problemi pre-esistenti} \label{ssec:packager-pre}  % moviepy vs ffmpeg (errori nel video e audio transcodifica in mp3), offset
 Prima di dedicarsi alla scrittura dei test, si è verificata la corretta funzionalità del software.
 
-Sono stati riscontrati dei problemi importanti relativi alla creazione del \textit{PreservationAudioVisualFile}
+Sono stati riscontrati dei problemi importanti relativi alla creazione del Preservation Audio-Visual File:
 
-\begin{lstlisting}[language=Python, caption={Codice iniziale, creazione PreservationAudioVisualFile}]
+\begin{lstlisting}[language=Python, caption={Codice iniziale, creazione Preservation Audio-Visual File}]
 # Create Preservation Audio-Visual File with substituted audio
 video_file = files_name + '.mov'
 pvf_path = os.path.join(working_path, 'PreservationAudioVisualFile/', video_file)
@@ -179,10 +159,10 @@ except OSError:
     quit(os.EX_NOINPUT)
 \end{lstlisting}
 
-Il primo problema è relativo alla sincronizzazione del video con l'audio: l'audio deve essere anticipato se viene trovato un offset positivo, altrimenti deve essere anticipato il video.
-Alle righe 12-16, si osserva che il comportamento non è quello richiesto, dato che a riga 16 l'offset ha valore negativo, allora \href{https://zulko.github.io/moviepy/}{MoviePy}, libreria utilizzata per eseguire editing video, farà iniziare la traccia a partire da $|offset|$ secondi prima del termine della clip.\footnote{Codice sorgente: \url{https://zulko.github.io/moviepy/_modules/moviepy/Clip.html\#Clip.subclip}}    % TODO da verificare se vero
+Il primo problema è relativo alla sincronizzazione del video con l'audio: l'audio deve essere anticipato se viene trovato uno scostamento A/V positivo, altrimenti deve essere anticipato il video.
+Alle righe 12-16 si osserva che il comportamento non è quello richiesto: dato che a riga 16 l'offset ha valore negativo, allora \href{https://zulko.github.io/moviepy/}{MoviePy}, libreria utilizzata per eseguire editing video, farà iniziare la traccia a partire da $|offset|$ secondi prima del termine della clip.\footnote{Codice sorgente: \url{https://zulko.github.io/moviepy/_modules/moviepy/Clip.html\#Clip.subclip}}    % TODO da verificare se vero
 
-Il secondo problema è relativo alla non specifica nel codice della codifica audio che porta la libreria MoviePy a ricadere nel comportamento di default, ovvero generare un file con codifica MP3 (lossy) a \qty{44100}{\Hz} e ad avere di conseguenza, in questo caso, una transcodifica, il che non è ottimale per un software che ha come obiettivo la conservazione di documenti audio.
+Il secondo problema è relativo alla non specifica nel codice della codifica audio che porta la libreria MoviePy a ricadere nel comportamento di default ovvero generare un file con codifica MP3 (lossy) a \qty{44100}{\Hz} e ad avere di conseguenza, in questo caso, una transcodifica, il che non è ottimale per un software che ha come obiettivo la conservazione di documenti audio in alta qualità.
 
 Il terzo problema invece è provocato dalla libreria \href{https://zulko.github.io/moviepy/}{MoviePy} che, per motivi sconosciuti e solo in alcuni casi, genera file corrotti nella traccia video, nello specifico che si bloccano dopo alcuni secondi.  % TODO verificare se c'entra con il problema di cui sopra.
 
@@ -220,9 +200,9 @@ except OSError:
 
 
 \subsection{Come verificare l'uguaglianza tra audio} \label{ssec:packager-audio}    % fingerprinting con chromaprint, suo wrapper in python, free software e mie contribuzioni, comunicare col mantainer
-Per verificare l'uguaglianza fra tracce audio, inizialmente si è provato un confronto tramite le librerie \textit{hashlib} o \textit{filecmp}, ma entrambi i test non hanno avuto successo perchè in alcuni casi non è richiesto di verificare che il file sia lo stesso identico (stesso hash), ma piuttosto di controllare che il suono sia il medesimo\footnote{La differenza si osserva, per esempio, quando si hanno 2 file, uno scostato di qualche secondo rispetto all'altro, questo è ciò che accade nel caso in esame, quando si esegue la sincronizzazione audio/video.}.
+Per verificare l'uguaglianza fra tracce audio, inizialmente si è provato un confronto tramite le librerie \textit{hashlib} o \textit{filecmp}, ma entrambi i test non hanno avuto successo perchè in alcuni casi non è richiesto di verificare che il file sia lo stesso identico (stesso hash), ma piuttosto di controllare che il suono sia il medesimo.\footnote{La differenza si osserva, per esempio, quando si hanno 2 file, uno scostato di qualche secondo rispetto all'altro; questo è ciò che accade nel caso in esame quando si esegue la sincronizzazione audio/video.}
 
-La soluzione trovata si basa sulla libreria \href{https://acoustid.org/chromaprint}{chromaprint}\footnote{chromaprint è la libreria che è alla base del progetto AcoustID, utilizzato nel piuttosto famoso software \href{https://musicbrainz.org/}{MusicBrainz} (\href{https://picard.musicbrainz.org/}{Picard}) che serve a taggare le proprie tracce musicali.}, la quale permette di ricavare delle impronte digitali (\textit{fingerprint}) da delle tracce audio, in maniera da poi confrontarle tra loro per ottenere la loro somiglianza.    % TODO taggare va bene?
+La soluzione trovata si basa sulla libreria \href{https://acoustid.org/chromaprint}{chromaprint}\footnote{chromaprint è la libreria che è alla base del progetto AcoustID, utilizzato nel piuttosto famoso software \href{https://musicbrainz.org/}{MusicBrainz} (\href{https://picard.musicbrainz.org/}{Picard}) che serve a taggare le proprie tracce musicali.}, la quale permette di ricavare un'impronta digitale (\textit{fingerprint}) a partire da una traccia audio in maniera da poi confrontare due impronte tra loro per ottenere una misura della somiglianza tra le rispettive tracce.    % TODO taggare va bene?
 
 È stata utilizzata in particolare una libreria Python, la quale non è altro che un wrapper di AcoustID, chiamata \href{https://github.com/beetbox/pyacoustid}{pyacoustid} che aiuta lo sviluppatore Python esponendo direttamente le API di chromaprint ed un metodo per confrontare le impronte.
 
@@ -234,35 +214,35 @@ output_fingerprint = acoustid.fingerprint_file(output_paf_path)
 assert acoustid.compare_fingerprints(input_fingerprint, output_fingerprint) > AUDIO_THRESHOLD, "PreservationAudioFile.wav is not the same as input"
 \end{lstlisting}
 
-Come si può leggere dal codice, è stata scelta come soglia di somiglianza il $70\%$, non è il $100\%$ perchè, ad esempio, nei casi in cui è stata effettuata la sincronizzazione audio/video l'audio non è esattamente uguale, inoltre dai vari test eseguiti sui dataset forniti, questo valore ha funzionato correttamente.
+Come si può leggere dal codice, è stata scelta come soglia di somiglianza il $70\%$, non il $100\%$ perché, ad esempio, nei casi in cui è stata effettuata la sincronizzazione audio/video l'audio non è esattamente uguale; inoltre dai vari test eseguiti sui dataset forniti, questo valore ha funzionato correttamente.
 
-Durante la scelta della soglia da adottare sono state eseguite diverse prove ed è stato verificato che, correttamente, nel caso dei file in esame, si ottengono dei risultati elevai, talvolta uguali a $1$, mentre in caso di file diversi, si ottiene un valore tendente a $0$.\footnote{Alcune prove si possono trovare alla pagina: \url{https://github.com/albertopasqualetto/Tesi-triennale/blob/main/Notebooks/chromaprint_comparisons.ipynb}}   % non è più stata trovata una differenza in base al codec
+Durante la scelta della soglia da adottare sono state eseguite diverse prove ed è stato verificato che, correttamente, anche nel caso dei dataset forniti, si ottengono dei risultati elevati, talvolta uguali a $1$, se i file dovrebbero essere considerati uguali, mentre in caso di file diversi si ottiene un valore tendente a $0$.\footnote{Alcune prove si possono trovare alla pagina: \url{https://github.com/albertopasqualetto/Tesi-triennale/blob/main/Notebooks/chromaprint_comparisons.ipynb}}   % non è più stata trovata una differenza in base al codec
 
-La libreria pyacoustid, nelle prime fasi di scrittura dei test, non era ancora completamente funzionante e compresa del metodo per comparare le impronte digitali, infatti la sua versione 1.2.2, presente sulla repository \href{https://pypi.org/}{PyPi}, non vedeva ancora implementata la funzione \verb|compare_fingerprints|, già presente invece sulla sua repository GitHub grazie al contributo di un utente; tale implementazione era, però, non funzionante a causa di alcuni errori del codice come si può vedere dai cambiamenti applicati successivamente e descritti qui: 
+La libreria pyacoustid, nelle prime fasi di scrittura dei test, non era ancora completamente funzionante né compresa del metodo per comparare le impronte digitali, infatti la sua versione 1.2.2, presente nella repository \href{https://pypi.org/}{PyPi}, non vedeva ancora implementata la funzione \verb|compare_fingerprints|, già presente invece nella sua repository GitHub grazie al contributo di un utente; tale implementazione era, però, non funzionante a causa di alcuni errori del codice come si può vedere dai cambiamenti applicati successivamente e descritti qui di seguito: 
 
 \begin{lstlisting}[language=diff]
-@@ -382,7 +382,7 @@ def _match_fingerprints(a: List[int], b: List[int]) -> float:
-            if biterror <= MAX_BIT_ERROR:
-                offset = i - j + bsize
-                counts[offset] += 1
--   topcount = counts.max()
-+   topcount = max(counts)
-    return topcount / min(asize, bsize)
+@@ -382,7 +382,7 @@ def _match_fingerprints(a: List[int], b: List[int]) -> float:       
+             if biterror <= MAX_BIT_ERROR:
+                 offset = i - j + bsize
+                 counts[offset] += 1
+-    topcount = counts.max()
++    topcount = max(counts)
+     return topcount / min(asize, bsize)
 
 
 @@ -397,8 +397,8 @@ def compare_fingerprints(a, b) -> float:
-        raise ModuleNotFoundError("function needs chromaprint")
+         raise ModuleNotFoundError("function needs chromaprint")
 
-    # decompress fingerprints
--   a = [int(x) for x in chromaprint.decode_fingerprint(a)[0]]
--   b = [int(x) for x in chromaprint.decode_fingerprint(b)[0]]
-+   a = [int(x) for x in chromaprint.decode_fingerprint(a[1])[0]]
-+   b = [int(x) for x in chromaprint.decode_fingerprint(b[1])[0]]
-    return _match_fingerprints(a, b)
+     # decompress fingerprints
+-    a = [int(x) for x in chromaprint.decode_fingerprint(a)[0]]
+-    b = [int(x) for x in chromaprint.decode_fingerprint(b)[0]]
++    a = [int(x) for x in chromaprint.decode_fingerprint(a[1])[0]]
++    b = [int(x) for x in chromaprint.decode_fingerprint(b[1])[0]]
+     return _match_fingerprints(a, b)
 \end{lstlisting}
 
-Per applicare queste modifiche è stato necessario effettuare una \href{https://github.com/beetbox/pyacoustid/pull/78}{\ac{PR}}\footnote{Una \ac{PR} è una richiesta ai manutentori del codice aggiungerne di proprio per implementare nuove funzioni o per correggere dei problemi.} sulla repository ufficiale a cui ha seguito uno scambio di messaggi con il manutentore e l'implementatore del codice; questa è una pratica comune nel mondo del software libero, il quale, tra i vari vantaggi, permette di leggere il codice sorgente e contribuire con dei miglioramenti alle tecnologie che si utilizzano.\footnote{\url{https://opensource.guide/how-to-contribute/\#improve-software-you-rely-on}}
-Si è contribuito a pyacoustid anche con \href{https://github.com/beetbox/pyacoustid/pull/79}{un'altra \ac{PR}} che permette l'utilizzo della libreria anche su piattaforme con Windows, la quale è stata implementata collaborando col manutentore.
+Per applicare queste modifiche è stato necessario effettuare una \href{https://github.com/beetbox/pyacoustid/pull/78}{\ac{PR}}\footnote{Una \ac{PR} è una richiesta ai manutentori del codice di aggiungerne di proprio per implementare nuove funzioni o per correggere dei problemi.} sulla repository ufficiale a cui ha seguito uno scambio di messaggi con il manutentore e l'implementatore del codice; questa è una pratica comune nel mondo del software libero, il quale, tra i vari vantaggi, permette di leggere il codice sorgente e contribuire con dei miglioramenti alle tecnologie che si utilizzano.\footnote{\url{https://opensource.guide/how-to-contribute/\#improve-software-you-rely-on}}
+Si è contribuito a pyacoustid anche con \href{https://github.com/beetbox/pyacoustid/pull/79}{un'altra \ac{PR}} che permette l'utilizzo della libreria anche in Windows, la quale è stata implementata collaborando col manutentore.
 
 Ora la versione presente su PyPi è la 1.3.0, contenente tutte le modifiche citate.
 
@@ -289,21 +269,21 @@ print("psnr_out=", psnr)
 assert psnr == 'inf' or float(psnr) > VIDEO_THRESHOLD, "PreservationAudioVisualFile.mov is not the same as input"
 \end{lstlisting}
 
-Come si può osservare dal codice, è stato individuato un \ac{PSNR} soglia di \qty{25}{\dB}, ancora una volta non è massimo (infinito) perchè nei casi di sincronizzazione in cui si taglia una parte di video, si ottiene un valore minore (e nemmeno elevato) di \ac{PSNR}, ma comunque in grado di discernere video "uguali" da video veramente distinti.
+Come si può osservare dal codice, è stato individuato un \ac{PSNR} soglia di \qty{25}{\dB}, ancora una volta non è massimo (infinito) perché nei casi di sincronizzazione in cui si taglia una parte di video, si ottiene un valore minore (e nemmeno elevato) di \ac{PSNR}, ma comunque in grado di discernere video "uguali" da video veramente distinti.
 
-Esistono altri metodi per comparare dei video e tra questi vi sono il \ac{SSIM} oppure, ancora una volta, qualche algoritmo di fingerprinting, ma si è visto che il \ac{PSNR} è funzionale allo scopo ed è il più rapido ad essere eseguito; il codice potrebbe essere migliorato per avere più certezza dell'uguaglianza, ma questo non è un problema semplice considerando che i video in questione sono identici a meno di un'eventuale taglio della parte iniziale; un'idea potrebbe essere quella di calcolare il psnr a ritroso e considerando i video solo per la durata del più breve, ciò però non considererebbe il caso limite di file più lunghi con la parte terminale in comune.
+Esistono altri metodi per comparare dei video e tra questi vi sono il \ac{SSIM} oppure, ancora una volta, qualche algoritmo di fingerprinting, ma si è visto che il \ac{PSNR} è funzionale allo scopo ed è il più rapido ad essere eseguito; il codice potrebbe essere migliorato per avere più certezza dell'uguaglianza, ma questo non è un problema semplice considerando che i video in questione sono identici a meno di un'eventuale taglio della parte iniziale, un'idea potrebbe essere quella di calcolare il \ac{PSNR} a ritroso e considerando i video solo per la durata del più breve, ciò però non considererebbe il caso limite di file diversi con la parte terminale in comune.
 
 
 \subsection{Pulizia/reformat del codice della libreria} \label{ssec:packager-post}  % principio DRY, docstrings, unit tests, compatiblità Windows ma esecuzione docker
-A termine del lavoro è stato eseguito un reformat del codice della libreria, nello stile del \ac{TDD}.
+A termine del lavoro è stato eseguito un reformat del codice della libreria ricalcando lo stile del \ac{TDD}.
 Si è cercato di seguire il principio \ac{DRY}, ovvero di limitare la ridondanza del codice creando delle funzioni autoesplicative per ogni macro azione del codice.
 Facendo ciò si è limitata la ridondanza sia all'interno dello stesso file, sia si è rimossa la duplicazione tra client e server, che ora utilizzano entrambi le funzioni di una libreria condivisa.
 
-Per le funzioni create precedentemente sono stati creati degli unit tests per le funzionalità non ancora testate dai conformance tests.
+Per le funzioni appena citate sono stati creati degli unit tests per le funzionalità non ancora collaudate dai conformance tests.
 
 Ove opportuno sono state scritte le docstings per le funzioni, ovvero la loro documentazione.
 
-Sono state anche aggiunte delle specifiche del comportamento per assicurare l'esecuzione da capo a fine in Windows, dato che alcune funzionalità non sono supportate dal sistema operativo di Microsoft:
+Sono state anche aggiunte delle strutture di controllo per assicurare l'esecuzione da capo a fine in Windows, dato che alcune funzionalità non sono supportate dal sistema operativo di Microsoft:
 \begin{lstlisting}[language=diff]
 - quit(os.EX_CONFIG)
 + if not sys.platform.startswith(('win', 'cygwin')):
@@ -311,26 +291,27 @@ Sono state anche aggiunte delle specifiche del comportamento per assicurare l'es
 + else:
 +     quit()
 \end{lstlisting}
-Ciò è stato fatto per assicurare l'esecuzione multipiattaforma, nonostante in produzione il packager sia eseguito in un container linux.
+Ciò è stato fatto nell'ottiva di garantire l'esecuzione multipiattaforma, nonostante in produzione il Packager sia eseguito in un container Linux.
 
 
-\section{\acs{CAE}-\acs{ARP} audio analyser} \label{sec:test-audioanalyser}
+\section{\acs{CAE}-\acs{ARP} Audio Analyser} \label{sec:test-audioanalyser}
 Successivamente è stato preso in considerazione l'\ac{AIM} Audio Analyser.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
     \includegraphics{img/audioanalyser.png}
     \caption{\ac{ARP} Audio Analyser}
     \label{fig:audio-analyser}
 \end{figure}
 
-L'audio analyser, come anticipato nella sottosezione \ref{ssec:mpai-cae-arp}, è l'\ac{AIM} che si occupa di individuare le irregolarità nell'audio, di fornirle al video analyser ed, una volta ottenute anche le irregolarità del video, di fornirle al tape irregularity classifier (il classificatore delle irregolarità), oltre a ciò si occupa di passare al classificatore appena citato anche dei frammenti di audio lunghi \qty{500}{\ms} in corrispondenza di ogni irregolarità, vedi schema in figura \ref{fig:audio-analyser}.
+L'Audio Analyser, come anticipato nella sottosezione \ref{ssec:mpai-cae-arp}, è l'\ac{AIM} che si occupa di individuare le irregolarità nell'audio, di fornirle al Video Analyser e, una volta ottenute anche le irregolarità del video, di fornirle al Tape Irregularity Classifier (il classificatore delle irregolarità), oltre a ciò si occupa di passare al classificatore appena citato anche dei frammenti di audio lunghi \qty{500}{\ms} in corrispondenza di ogni irregolarità, vedi schema in figura \ref{fig:audio-analyser}.
 
-Viene riportata la descrizione dei conformance tests da seguire, definita da MPAI, nella tabella \ref{tab:audioanalyser-valutazione}.\footnote{Estratta dalla versione WD 0.15.2 del documento MPAI Conformance Testing per \ac{CAE}.}
+Viene riportata la descrizione definita da \ac{MPAI} dei conformance tests da seguire nella tabella \ref{tab:audioanalyser-valutazione}.\footnote{Estratta dalla versione WD 0.15.2 del documento MPAI Conformance Testing per \ac{CAE}.}
 
-\begin{table}[h]
+\begin{spacing}{1.1}
+\begin{table}[H]
     \centering
-    \begin{tabular}{|p{0.2\textwidth}|p{0.8\textwidth}|}
+    \begin{tabular}{|p{0.18\textwidth}|p{0.82\textwidth}|}
         \hline
         \textbf{Means}   &   \textbf{Actions}\\
         \hline
@@ -367,12 +348,10 @@ Viene riportata la descrizione dei conformance tests da seguire, definita da MPA
     \label{tab:audioanalyser-valutazione}
 \end{table}
 
-Ad ogni esecuzione dei test è richiesto di inserire i dati nella tabella \ref{tab:audioanalyser-report}.    % FIXME sistemare, solo copiato
+Ad ogni esecuzione dei test è richiesto di inserire i dati nel report mostrato in tabella \ref{tab:audioanalyser-report}.
 \begin{table}[H]
     \centering
-    \begin{adjustbox}{max width=\textwidth}
-        \begin{tabular}{|c|c|}
-            
+        \begin{tabularx}{\textwidth}{|p{0.3\textwidth}|X|}
             \hline
             \textbf{Conformance Tester ID}                      &   Unique Conformance Tester Identifier assigned by MPAI\\
             \hline
@@ -391,7 +370,7 @@ Ad ogni esecuzione dei test è richiesto di inserire i dati nella tabella \ref{t
             \textbf{Test ID}                                    &   Unique Test Identifier assigned by Conformance Tester.\\
             \hline
             \textbf{Actual output}                              &   Actual output provided as a matrix of n rows containing R and P values.\\
-                                                                &   \begin{tabular}{|c|c|c|}
+                                                                &   \begin{adjustbox}{max width=0.65\textwidth} \begin{tabular}{|c|c|c|}
                 \hline
                 Tuple \# &   R   &   P\\
                 \hline
@@ -401,7 +380,7 @@ Ad ogni esecuzione dei test è richiesto di inserire i dati nella tabella \ref{t
                 \hline
                 n       &   Measure n   &   Measure n\\
                 \hline
-            \end{tabular}\\
+            \end{tabular} \end{adjustbox} \smallskip\\
             \hline
             \textbf{Execution time (optional)}                  &   Duration of test execution.\\
             \hline
@@ -409,46 +388,48 @@ Ad ogni esecuzione dei test è richiesto di inserire i dati nella tabella \ref{t
             \hline
             \textbf{Test Date}                                  &   yyyy/mm/dd.\\
             \hline
-        \end{tabular}
-    \end{adjustbox}
-    \caption{Report da compilare ad ogni esecuzione dell'audio analyser.}
+        \end{tabularx}
+    \caption{Report da compilare ad ogni esecuzione dell'Audio Analyser.}
     \label{tab:audioanalyser-report}
 \end{table}
-Il report viene compilato automaticamente in un file JSON come spiegato anche per il packager (sottosezione \ref{ssec:packager-pre}).
+\end{spacing}
+Il report viene compilato automaticamente in un file JSON come spiegato anche per il Packager (sottosezione \ref{ssec:packager-pre}).
 Un esempio è riportato di seguito:
 \lstinputlisting[language=json]{listings/audioanalyser-report.json}
 
 
 \subsection{Problemi pre-esistenti} \label{ssec:audioanalyser-pre}  % typos, video analyser usa : invece di . e workaround, in Windows scipy.signal.correlate da overflow perche tipo di default per numpy è int32, test non funzionanti
-Alla prima esecuzione del modulo, ancora prima di scrivere i test richiesti, si è notato che l'offset calcolato è estremamente diverso da quello fornito nei dataset di esempio, nello specifico si osservava addirittura uno scostamento di segno opposto, indagando si è individuato il problema nell'utilizzo su piattaforme Windows dato dal fatto che il tipo di dato di default per numpy in quest ultima è \texttt{int32}, mentre in ambiente Unix (quindi ancora una volta si far riferimento a problemi non riscontrabili in produzione) il default è \texttt{int64}, passando il tipo richiesto manualmente, il problema di overflow alla chiamata di \texttt{scipy.signal.correlate} non si presenta più.\footnote{\url{https://github.com/numpy/numpy/issues/9464}}
-Questa problematica risiede nella libreria \texttt{mpai-cae-arp}, la quale viene discussa nella sezione \ref{sec:lib-mpaicaearp}.
+Alla prima esecuzione del modulo, ancora prima di scrivere i test richiesti, si è notato che l'offset calcolato fosse estremamente diverso da quello fornito nei dataset di esempio, nello specifico si osservava addirittura uno scostamento di segno opposto. Indagando si è riscontrato che il problema si presentasse solo nel caso di utilizzo del codice su piattaforme Windows ed infine si è visto che l'errore fosse dato dal fatto che il tipo di dato di default per numpy in Windows è \texttt{int32} anche in macchine a 64 bit, mentre in ambiente Unix (ancora una volta si far riferimento a problemi non riscontrabili in produzione) il default è \texttt{int64}; passando il tipo necessario manualmente, il problema di overflow alla chiamata di \texttt{scipy.signal.correlate} non si presenta più.\footnote{\url{https://github.com/numpy/numpy/issues/9464}}
+Questa problematica risiede nella libreria \texttt{mpai-cae-arp}, la quale viene discussa nella sezione \ref{sec:lib-mpaicaearp}.   % TODO dovrei nominare prima scipy.signal.correlate?
 
 Sono stati sistemati degli errori di battitura, alcuni dei quali impedivano il funzionamento del codice (vedi l'uso ambiguo di pydantic precedentemente permesso alla sottosezione \ref{ssec:mpaicaearp-pydantic})
 
-È stata aggiornata la versione richiesta della libreria mpai-cae-arp:
+È stata aggiornata la versione richiesta della libreria mpai-cae-arp su cui sono basati tutti gli \ac{AIM} di \ac{ARP}:
 \begin{lstlisting}[language=diff]
 @@ -21,5 +21,5 @@ audio-analyser = 'audio_analyzer.cli:main'
     pandas = "^2.0.0"
     scikit-learn = "^1.2.2"
     grpcio-tools = "^1.53.0"
 -   mpai-cae-arp = "^0.3.0"
-+   mpai-cae-arp = "^0.4.1"
++   mpai-cae-arp = "^0.5.0"
     ffmpeg-python = "^0.2.0"
 \end{lstlisting}
-su cui sono basati tutti gli \ac{AIM} di \ac{ARP}, si nota che la specifica \verb|^0.3.0| (basata sul \href{https://semver.org/lang/it/}{versionamento semantico}) permette solo le versioni $\ge0.3.0, <0.4.0$, quindi l'aggiornamento fino a prima della successiva MINOR, differendo dal normale funzionamento con versioni con MAJOR$\ge1$ ($\ge1.0.0$) con cui si permette l'aggiornamento fino a prima della successiva MAJOR.\footnote{Fonte: \href{https://python-poetry.org/docs/dependency-specification/\#caret-requirements}{documentazione di Poetry}.}
+Si nota che la specifica \verb|^0.3.0| (basata sul \href{https://semver.org/lang/it/}{versionamento semantico}) permette solo le versioni $\ge0.3.0, <0.4.0$, quindi l'aggiornamento fino a prima della successiva MINOR, differendo dal normale funzionamento in presenza di versioni con MAJOR$\ge1$ ($\ge1.0.0$) per cui si permette l'aggiornamento fino a prima della successiva MAJOR.\footnote{Fonte: \href{https://python-poetry.org/docs/dependency-specification/\#caret-requirements}{documentazione di Poetry}.}
 
-Infine nel codice dei test si dovrà fronteggiare il fatto che, in maniera incorretta, nel video analyser si utilizzino come divisore tra secondi e millisecondi i due punti (:) (si può vedere nei file \verb|*_IrregularityFileOutputN.json|), quindi, alla lettura di file contenenti irregolarità provenienti dal video analyser, si dovranno applicare delle soluzioni per aggirare il problema ed inoltre si vedranno fallire i test che chiedono di verificare la sintassi dello schema JSON nel caso contengano le irregolarità già citate.
+Infine nel codice dei test si dovrà fronteggiare il fatto che, in maniera incorretta, nel video analyser si utilizzano come divisore tra secondi e millisecondi i due punti (:) (si può vedere nei file \verb|*_IrregularityFileOutputN.json|), quindi, alla lettura di file contenenti irregolarità provenienti dal video analyser, si dovranno applicare delle soluzioni per aggirare il problema ed inoltre si vedranno fallire i test che chiedono di verificare la sintassi dello schema JSON nel caso contengano le irregolarità già citate.
 
 
 \subsection{Come verificare che l'offset scelto è abbastanza vicino a quello reale} \label{ssec:audioanalyser-offset}   % formula fornita + ffprobe
-Nella tabella di valutazione \ref{tab:audioanalyser-valutazione} al punto 1.c viene richiesto di controllare che l'offset calcolato dall'audio analyser sia compatibile con quello reale, fornito nel dataset 5.
-Per fare ciò si richiede che la differenza in valore assoluto tra i 2 offset sia minore del tempo necessario a mostrare 3 frame del PreservationAudioVisualFile in millisecondi e si calcola tramite la seguente disuguaglianza:
+Nella tabella di valutazione \ref{tab:audioanalyser-valutazione} al punto 1.c viene richiesto di controllare che lo scostamento calcolato dall'Audio Analyser sia compatibile con quello reale, fornito nel dataset 5.
+Per fare ciò si richiede che la differenza in valore assoluto tra i 2 offset sia minore del tempo necessario a mostrare 3 frame del Preservation Audio-Visual File in millisecondi e si calcola tramite la seguente disuguaglianza:
 \begin{equation}
     |O_c - O_r| < 3 \times \lceil\frac{1000}{FPS_{DS3}}\rceil ms
 \end{equation}
-dove $O_c$ è l'offset calcolato, $O_r$ è l'offset reale e $FPS_{DS3}$ sono gli FPS del PreservationAudioVisualFile.
+dove $O_c$ è l'offset calcolato, $O_r$ è l'offset reale e $FPS_{DS3}$ sono gli FPS del Preservation Audio-Visual File.
 
-Gli FPS del video sono ottenuti tramite \href{https://ffmpeg.org/ffprobe.html}{ffprobe}, una utility di FFmpeg votata all'acquisizione di informazioni da file multimediali, tramite la richiesta di mostrare lo stream \verb|r_frame_rate|.\footnote{Si usa il comando \verb|ffprobe -v 0 -of csv=p=0 -select_streams v -show_entries stream=r_frame_rate video_path.mov|}
+Gli FPS del video sono ottenuti tramite \href{https://ffmpeg.org/ffprobe.html}{ffprobe}, una utility di FFmpeg votata all'acquisizione di informazioni da file multimediali, tramite la richiesta di mostrare lo stream \verb|r_frame_rate|.\footnote{Si usa il comando \texttt{ffprobe -v 0 -of csv=p=0 -select\_streams v -show\_entries stream=r\_frame\_rate video\_path.mov}}
+
+Il codice utilizzato è il seguente:
 \begin{lstlisting}[language=Python]
 @pytest.mark.parametrize("files_name", files_names)
 def test_offset_difference(files_name: str):
@@ -475,16 +456,15 @@ def test_offset_difference(files_name: str):
 
 
 \subsection{Come verificare che i file siano wav} \label{ssec:audioanalyser-wav}    % RF64 ma in realtà va bene wav; libreria filetype, magic numbers, MIME
-Nella tabella \ref{tab:audioanalyser-valutazione} al punto 1.d viene richiesto di controllare che i segmenti audio estratti dall'audio analyser siano in formato RF64, un formato compadibile col wave ed in realtà è sufficiente verificare che tali segmenti siano in formato wave.
+Nella tabella \ref{tab:audioanalyser-valutazione} al punto 1.d viene richiesto di controllare che i segmenti audio estratti dall'Audio Analyser siano in formato RF64: un formato compatibile col WAV; in realtà in questo caso è sufficiente verificare che tali segmenti siano in formato WAV.
 
-Per fare ciò è stata utilizzata la libreria Python \href{https://github.com/h2non/filetype.py}{filetype} che legge i magic numbers, ovvero delle stringhe costanti nell'header di un file, utilizzati per identificarne la tipologia.
-Nel caso di wav, la sua firma in formato esadecimale è "\texttt{52 49 46 46 ?? ?? ?? ??
-57 41 56 45}".\footnote{Gli \texttt{??} indicano che i valori in quelle posizioni non sono fissi.}
-La libreria citata cerca di indovinare il tipo del file e ne restituisce il tipo \acs{MIME}, \texttt{audio/x-wav} nel caso del wave.\footnote{\acf{MIME} è uno standard che estende le email e fornisce il supporto a dati diversi dal solo testo. Il suo \texttt{Content-Type} indica il tipo di dato.}
+Per fare ciò è stata utilizzata la libreria Python \href{https://github.com/h2non/filetype.py}{filetype} che legge i magic numbers: delle stringhe costanti nell'header di un file utilizzati per identificarne la tipologia.
+La firma di un WAV in formato esadecimale è "\texttt{52 49 46 46 ?? ?? ?? ?? 57 41 56 45}".\footnote{Gli \texttt{??} indicano che i valori in quelle posizioni non sono fissi.}
+La libreria citata cerca di indovinare il tipo del file e ne restituisce il tipo \acs{MIME}, \texttt{audio/x-wav} nel caso del WAV.\footnote{\acfi{MIME} è uno standard che estende le email e fornisce il supporto a dati diversi dal solo testo. Il suo \texttt{Content-Type} indica il tipo di dato.}
 
 
 \subsection{Come verificare che la classificazione sia coerente} \label{ssec:audio-analyser-classificazione}    % non necessario ma utile per capire che l'IA non da sempre stessi risultati, output utilizzati per gli altri test, recall, precision
-Per verificare se la rilevazione e la classificazione delle irregolarità sono coerenti con il dataset di test, è stata creata la funzione \verb|check_classification_results| che confronta 2 dizionari contenenti irregolarità e restituisce il numero di elementi diversi e dove si trovano queste diversità.
+Per verificare se la rilevazione e la classificazione delle irregolarità sono coerenti con il dataset di test, è stata creata la funzione \verb|check_classification_results| che confronta 2 dizionari contenenti irregolarità e restituisce il numero di elementi diversi e dove si trovano queste diversità:
 \begin{lstlisting}[language=Python]
 def check_classification_results(if_dict_1: dict, if_dict_2: dict, print_differences: bool = False) -> (bool, int, int, int):
     """
@@ -561,47 +541,127 @@ def check_classification_results(if_dict_1: dict, if_dict_2: dict, print_differe
 
 Quando si ha a che fare con algoritmi basati sul machine learning è la norma avere risultati non deterministici per via della componente di casualità che spesso vi è inserita.
 Infatti il test che verifica l'esatta uguaglianza tra le 2 collezioni di irregolarità (\verb|test_audio_classification|) lo si è sempre visto fallire durante le sue esecuzioni, infatti esso non è richiesto dal documento descrivente i test di conformità.
-Ciò che è richiesto e che si basa sul codice appena citato, invece, è di controllare che tutte e sole le irregolarità presenti nel file di test siano presenti anche nel file in output ad una nuova esecuzione dell'audio analyser e che siano correttamente estratti i frammenti di audio agli istanti di tempo richiesti (punto 1.e di \ref{tab:audioanalyser-valutazione}) e che inoltre la precisione ed il recupero medi delle irregolarità trovate all'istante di tempo ed ai canali a cui appartengono rispetto al dizionario delle irregolarità di riferimento, il dataset 4, siano entrambi $>0.9$ (punto 2 di \ref{tab:audioanalyser-valutazione}).\footnote{Precisione e recupero (\textit{Precision} e \textit{Recall}) sono entrambe metriche sulle prestazioni di una classificazione: $Precision=\frac{True\ Positives}{True\ Positives + False\ Positives}$; $Recall=\frac{True\ Positives}{True\ Positives + False\ Negatives}$.}
+Ciò che è richiesto e che si basa sul codice appena citato, invece, è di controllare che tutte e sole le irregolarità presenti nel file di test siano presenti anche nel file in output ad una nuova esecuzione dell'Audio Analyser e che siano correttamente estratti i frammenti di audio agli istanti di tempo richiesti (punto 1.e di \ref{tab:audioanalyser-valutazione}) e che inoltre la precisione ed il recupero\footnote{Precisione e recupero (\textit{Precision} e \textit{Recall}) sono entrambe metriche sulle prestazioni di una classificazione: $Precision=\frac{True\ Positives}{True\ Positives + False\ Positives}$; $Recall=\frac{True\ Positives}{True\ Positives + False\ Negatives}$.} medi delle irregolarità trovate rispetto al dizionario delle irregolarità di riferimento, il dataset 4, siano entrambi $>0.9$ considerando l'istante di tempo ed i canali audio a cui appartengono le irregolarità (punto 2 di \ref{tab:audioanalyser-valutazione}).
 % TODO scrivere meglio
 
 
 \section{Parallelizzare o no? confronto di velocità} \label{sec:parallelizzazione}
-% TODO fare test
+Il plugin di pytest \href{https://pytest-xdist.readthedocs.io/}{pytest-xdist}, già citato nella sottosezione \ref{ssec:pytest}, permette di parallelizzare l'esecuzione dei test.
 
-
+I test di conformità sono stati eseguiti più volte su una macchina Windows 11 con una CPU Intel i7-1165G7 e 16 GB di RAM DDR4 a 3200 MHz, sia in modalità sequenziale, sia abilitando la parallelizzazione mediante l'opzione \texttt{-n auto} (numero di workers uguale al numero di CPUs disponibili) inserita nei files \texttt{pytest.ini} e si è osservato innanzitutto che la maggior parte del tempo utilizzato consiste nell'esecuzione dell'\ac{AIM} ed inoltre che, seppur di poco, l'esecuzione sequenziale è sempre più veloce di quella parallela sia in Packager che in Audio Analyser. Per questo motivo si è scelto di tenere la parallelizzazione disabilitata.
+Una rappresentazione dei dati è presente in figura \ref{fig:test-grafici-tempo}.
+% TODO fare test e mostrare dati
+\begin{figure}[h]
+     \centering
+     \begin{subfigure}{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{example-image-a}
+         \caption{Distribuzione dei tempi tra setup (esecuzione \ac{AIM}), tests e teardown; \ac{AIM} Packager}
+         \label{fig:grafico-distribuzione-tempo-packager}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{example-image-a}
+         \caption{Divisione dei tempi tra setup (esecuzione \ac{AIM}), tests e teardown; \ac{AIM} Audio Analyser}
+         \label{fig:grafico-distribuzione-tempo-audioanalyser}
+     \end{subfigure}
+     \par\bigskip
+     \begin{subfigure}{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{example-image-a}
+         \caption{Esecuzione parallela vs sequenziale; \ac{AIM} Packager}
+         \label{fig:grafico-parallelo-vs-sequenziale-packager}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{example-image-a}
+         \caption{Esecuzione parallela vs sequenziale; \ac{AIM} Audio Analyser}
+         \label{fig:grafico-parallelo-vs-sequenziale-audioanalyser}
+     \end{subfigure}
+        \caption{Tempi di esecuzione dei test}
+        \label{fig:test-grafici-tempo}
+\end{figure}
 
 
 
 \section{Libreria \texttt{mpai-cae-arp}} \label{sec:lib-mpaicaearp} % a cosa serve
 La libreria \href{https://pypi.org/project/mpai-cae-arp/}{mpai-cae-arp} contiene le classi, le costanti e le funzioni su cui si basano tutti gli \acp{AIM} di \ac{ARP} e che permettono loro di interoperare.
-Per questo motivo alcuni problemi relativi a questa libreria sono stati discussi in altre sezioni dato la sua ampia influenza (vedi \ref{ssec:audioanalyser-pre}).
+Per via della sua ampia influenza, alcuni problemi relativi a questa libreria sono stati discussi in altre sezioni (vedi \ref{ssec:audioanalyser-pre}).
 % TODO scrivere altro?
 
 
 \subsection{Bug: Pydantic} \label{ssec:mpaicaearp-pydantic}    % che ha portato a dover aggiornare i moduli
-È stato risolto un problema relativo all'uso "ambiguo" di \href{https://docs.pydantic.dev/1.10/}{Pydantic}, il suo scopo principale all'interno di \ac{ARP} è quello di disporre di alias per i parametri delle funzioni in maniera da utilizzare il nome dell'alias per l'output verso file (\texttt{EditingList.json}, \verb|*_IrregularityFileOutputN.json|, \dots), seguendo la nomenclatura richiesta dalle specifiche tecniche; in precedenza l'utilizzo del nome del parametro o del suo alias non era regolato e questo ha portato a degli errori che impedivano la corretta esecuzione del software.
-La risoluzione consiste nell'utilizzo di \verb|serialization_alias| al posto di \texttt{alias}, dato l'utilizzo primario degli alias.
+È stato risolto un problema relativo all'uso non univoco di \href{https://docs.pydantic.dev/1.10/}{Pydantic}, il suo scopo principale all'interno di \ac{ARP} è quello di fornire alias corrispondenti alla nomenclatura richiesta dalle specifiche tecniche per i parametri delle funzioni in maniera tale da utilizzare il nome dell'alias per l'output verso file (\texttt{EditingList.json}, \verb|*_IrregularityFileOutputN.json|, \dots); in precedenza l'utilizzo del nome del parametro o del suo alias non era regolato e questo ha portato a degli errori che impedivano la corretta esecuzione del software.
+La risoluzione applicata consiste nell'utilizzo di \verb|serialization_alias| al posto di \texttt{alias}, dato l'utilizzo primario degli alias.
 
-Contestualmente, per favorire la futuribilità dell'applicativo, oltre a limitarne la presenza dei bug, si è scelto di aggiornare la libreria alla successiva major release (\verb|^2.3.0|).
+Contestualmente, per favorire l'utilizzabilità nel futuro dell'applicativo, oltre che per limitarne la presenza di bug, si è scelto di aggiornare la libreria alla successiva major release (\verb|^2.3.0|).
 
-Queste modifiche implicano il dover aggiornare i nomi dei campi utilizzati in tutti gli \acp{AIM} impedendo la retrocompatibilità.
+Queste modifiche implicano il dover migrare \ac{ARP}, modificando i nomi dei campi utilizzati in tutti gli \acp{AIM} ed impedendo la retrocompatibilità.
 
 
-\subsection{Bug: formatting sbagliato delle EditingList scritte su file} \label{ssec:mpaicaearp-editinglist-format}
+\subsection{Bug: formatting incorretto delle EditingList scritte su file} \label{ssec:mpaicaearp-formato-editinglist}
 Un bug presente nel codice di questa libreria salvava nel filesystem dei file con una formattazione errata, un esempio ne è l'\texttt{EditingList.json} che veniva salvato nella seguente maniera:
 \lstinputlisting[language=json, caption={\texttt{EditingList.json} salvato tramite la precedente modalità, contiene solo una stringa}]{listings/EditingList-badformat.json}
-Il JSON di cui sopra è formato da una sola stringa che contiene la rappresentazione dell'oggetto Python ed i caratteri di escape mostrati, ciò portava al fallimento del relativo test di conformità del packager (\ref{sec:test-packager}.
+Il JSON di cui sopra è formato da una sola stringa che contiene la rappresentazione dell'oggetto Python ed i caratteri di escape mostrati, ciò portava al fallimento del relativo test di conformità del Packager (\ref{sec:test-packager}).
 
 Il problema risiedeva nella chiamata di \texttt{json.dump} sulla stringa contenente l'oggetto da salvare in JSON generata da \texttt{model.json} (in Pydantic V2 chiamata \verb|model.model_dump_json|), questo comportamento probabilmente non era chiaro all'autore di questo codice per via del suo nome fuorviante; utilizzando, invece, la funzione di Pydantic V2 \verb|model.model_dump|, chiamata con parametro \texttt{mode='json'} per abilitare la serializzazione degli oggetti presenti nei campi della classe, si ottiene un dizionario Python che può essere scritto correttamente su file JSON (in Pydantic V1 la funzione corrispondente sarebbe stata \texttt{model.dict}, ma essa non fornisce la possibilità di serializzare gli oggetti).
 Ora il file precedente appare correttamente come:
 \lstinputlisting[language=json, caption={\texttt{EditingList.json} salvato tramite l'attuale modalità, contiene il dizionario con i suoi valori serializzati}]{listings/EditingList-goodformat.json}
 
 
-\subsection{Bug: test di \texttt{AudioWave} a singolo canale non funzionante e fix di \texttt{get\_channel}}    % e fare riferimento a dtype del suo buffer nominato sopra
+\subsection{Bug: test di \texttt{AudioWave} a singolo canale non funzionante e fix di \texttt{get\_channel}} \label{ssec:mpaicaearp-audiowave}  % e fare riferimento a dtype del suo buffer nominato sopra
+La problematica di overflow limitata ai sistemi Windows descritta alla sottosezione \ref{ssec:audioanalyser-pre} è stata corretta col seguente codice:
+\begin{lstlisting}[language=diff]
+@@ -202,7 +202,7 @@ class AudioWave:
+  data = np.array([
+      int.from_bytes(raw_data[i:i + bit // 8], byteorder='little', signed=True)
+      for i in range(0, len(raw_data), bit // 8)
+- ])
++ ], dtype=np.int64)  # int32 (default in Windows) leds to overflow
+  data = np.reshape(data, (-1, channels))
+  return AudioWave(data, bit, channels, samplerate)
+\end{lstlisting}
+
+Questo, però, non era l'unico problema della classe AudioWave, infatti non erano supportate le tracce a singolo canale dato che l'indicizzazione di NumPy (operatore \texttt{[]}) non permette di operare su un array 1D come se fossero multidimensionali (ad esempio indicando il primo canale con \texttt{array[:,1]}).
+\begin{lstlisting}[language=diff]
+@@ -369,39 + 369, 43 @@ class AudioWave:
+  def get_channel(self, channel: int):
+      # [...]
+      if channel not in range(self.channels):
+          raise IndexError("Channel not found")
+-     return AudioWave(self.array[:, channel], self.bit, 1, self.samplerate)
++  
++     if self.channels == 1:
++         return AudioWave(self.array.squeeze(), self.bit, 1, self.samplerate)
++     else:
++         return AudioWave(self.array[:, channel], self.bit, 1, self.samplerate)
+\end{lstlisting}
+È necessario, perciò, introdurre una condizione sul numero di canali presenti e, nel caso ve ne sia uno solo, non operare con l'indicizzazione, come si può osservare dal codice mostrato.
 
 
+\subsection{Aggiornamenti di versione} \label{ssec:mpaicaearp-aggiornamenti}
+Per lo stesso motivo descritto nella sottosezione \ref{ssec:mpaicaearp-pydantic}, non solo Pydantic è stato aggiornato, ma anche le altre librerie necessarie.
 
+La libreria \href{https://librosa.org/}{librosa} (analisi audio) richiede la libreria \href{https://numba.pydata.org/}{Numba} (compilatore JIT) che, a sua volta, richiede \href{https://llvmlite.readthedocs.io/en/latest/}{llvmlite} (Python bindings per LLVM: un'infrastruttura di compilazione) e \href{https://numpy.org/}{NumPy} (supporto ed alta efficenza computazionale per array e matrici di grandi dimensioni e funzioni matematiche); tutte queste librerie sono state aggiornate all'ultima versione compatibile tra loro, rimuovendo la dipendenza diretta \verb|llvmlite = "^0.39.1"| ed il blocco alla versione di NumPy 1.23.3 precedentemente impostati.
+\begin{lstlisting}[language=diff, caption={\texttt{pyproject.toml}, aggiornamento delle dipendenze}]
+@@ -9,8 +9,7 @@
+  [tool.poetry.dependencies]
+  python = "^3.10"
+- numpy = "1.23.3"
++ numpy = "~1.24.4"   # because of numba (from librosa) requirement <=1.24
+- pydantic = "^1.10.7"
++ pydantic = "^2.3.0"
+  pyyaml = "^6.0"
+- llvmlite = "^0.39.1" 
+- librosa = "^0.10.0.post2"
++ librosa = "^0.10.1"
+  grpcio-tools = "^1.53.0"
+\end{lstlisting}
+Questa modifica è possibile solo in seguito all'1 maggio 2023 (data successiva all'ultimo commit presente nella repository prima dell'inizio di questo lavoro), quando le librerie citate hanno introdotto la cross-compatibilità tra le nuove versioni.\footnote{Dipendenza di librosa da Numba: \url{https://github.com/librosa/librosa/blob/43d4427f7a389acc79b5be3c924646701f19bb46/setup.cfg\#L67};\\
+Dipendenze di Numba da llvmlite e Numpy: \url{https://github.com/numba/numba/blob/596e8a55334cc46854e3192766e643767bd7c934/setup.py\#L367};\\
+Numba 0.57 introduce il supporto a Python 3.11 e Numpy 1.24: \url{https://numba.readthedocs.io/en/stable/release-notes.html\#version-0-57-0-1-may-2023};\\
+llvmlite 0.40.0 introduce il supporto a Python 3.11: \url{https://llvmlite.readthedocs.io/en/latest/release-notes.html\#v0-40-0-may-1-2023}.}
 
-
-\subsection{Aggiornamento delle librerie perchè cross-dependencies ora supportate (librosa, llvmlite, numpy)}
-\subsection{Aggiornamento a Python 3.11} \label{ssec:py-311}
+Questi aggiornamenti hanno permesso la possibilità, prima non presente, di utilizzare la libreria, e quindi di conseguenza \ac{ARP} con la versione di Python 3.11, rendendo la libreria più "a prova di futuro".
