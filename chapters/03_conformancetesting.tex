@@ -9,7 +9,7 @@ L'obiettivo di questa tesi è quella di scrivere il codice dei test di conformit
 L'ambiente di sviluppo è un ambiente virtuale di \href{https://python-poetry.org/}{Poetry} basato su Python 3.10 (poi aggiornato a 3.11)\footnote{Vedi sezione \ref{ssec:mpaicaearp-aggiornamenti}.}, su una macchina Windows 11 (per alcuni confronti, occasionalmente è stata utilizzata una macchina virtuale con Ubuntu 20.04.6 LTS). L'ambiente di produzione è un server Docker con container Linux.\footnote{Per questo motivo l'implementazione del \ac{CSC} ha anche una modalità di esecuzione come server con protocollo \href{https://grpc.io/}{gRPC}, utilizzato per la comunicazione con i vari \acp{AIM}.} Per il versionamento del software viene usato \href{https://git-scm.com/}{git}, utilizzando come server l'installazione \href{https://gitlab.dei.unipd.it/}{GitLab del \ac{DEI}}.\footnote{Le repositories rilvanti ai fini di questo documento sono: \href{https://gitlab.dei.unipd.it/mpai/packager}{\ac{AIM} Packager}; \href{https://gitlab.dei.unipd.it/mpai/audio-analyzer}{\ac{AIM} Audio Analyser}; \href{https://gitlab.dei.unipd.it/mpai/mpai-cae-arp}{libreria mpai-cae-arp}.}
 
 
-\section{Tests e \acl{TDD}} \label{sec:tests-tdd}
+\section{Tests e Test Driven Development} \label{sec:tests-tdd}
 Il software testing è il processo di valutazione e verifica del corretto funzionamento di un prodotto software rispetto alle aspettative; la creazione di test suites ha l'obiettivo di rilevare bug prima di rilasciare il prodotto.
 Solitamente si tende ad automatizzare i test attraverso alcuni framework in modo tale da poterli eseguire ad ogni modifica del codice.
 
@@ -27,7 +27,7 @@ Uno dei framework per il testing in Python più popolari è \href{https://pytest
 Sono state utilizzate delle fixture per definire l'ambiente di test e per ottenere delle cartelle di test (\verb|pytest_sessionstart|, \verb|pytest_sessionfinish| e \verb|tmp_path|), inoltre è stata parametrizzata l'esecuzione delle varie funzioni di test in modo tale da essere eseguite per ogni documento digitalizzato tramite il decoratore \texttt{@pytest.mark.parametrize}.
 
 
-\section{\acs{CAE}-\acs{ARP} Packager} \label{sec:test-packager}
+\section{MPAI-CAE-ARP Packager} \label{sec:test-packager}
 Il primo \ac{AIM} preso in esame è stato il Packager.
 
 \begin{figure}[H]
@@ -126,7 +126,7 @@ Ad ogni esecuzione dei test è richiesto di inserire i dati nel report mostrato 
 Viene creato automaticamente il report sotto forma di file JSON contenente le informazioni conosciute dal software anche grazie all'aiuto della libreria \href{https://github.com/numirias/pytest-json-report}{pytest-json-report} che raccoglie i risultati dei test in un formato machine-readable.
 
 Il seguente listato ne è un esempio:
-\lstinputlisting[language=json]{listings/packager-report.json}
+\lstinputlisting[language=json, caption={Esempio di report compilato sotto forma di file JSON, \acs{AIM} Packager}]{listings/packager-report.json}
 
 
 \subsection{Bugs ed altri problemi pre-esistenti} \label{ssec:packager-pre}  % moviepy vs ffmpeg (errori nel video e audio transcodifica in mp3), offset
@@ -134,7 +134,7 @@ Prima di dedicarsi alla scrittura dei test, si è verificata la corretta funzion
 
 Sono stati riscontrati dei problemi importanti relativi alla creazione del Preservation Audio-Visual File:
 
-\begin{lstlisting}[language=Python, caption={Codice iniziale, creazione Preservation Audio-Visual File}]
+\begin{lstlisting}[language=Python, caption={Codice iniziale, creazione Preservation Audio-Visual File (Packager)}]
 # Create Preservation Audio-Visual File with substituted audio
 video_file = files_name + '.mov'
 pvf_path = os.path.join(working_path, 'PreservationAudioVisualFile/', video_file)
@@ -167,7 +167,7 @@ Il secondo problema è relativo alla non specifica nel codice della codifica aud
 Il terzo problema invece è provocato dalla libreria \href{https://zulko.github.io/moviepy/}{MoviePy} che, per motivi sconosciuti e solo in alcuni casi, genera file corrotti nella traccia video, nello specifico che si bloccano dopo alcuni secondi.  % TODO verificare se c'entra con il problema di cui sopra.
 
 Per risolvere questi due problemi si è scelto di sostituire MoviePy direttamente con \href{https://ffmpeg.org/}{FFmpeg}, ottenendo come risultato il seguente codice:
-\begin{lstlisting}[language=Python, caption={Codice finale, creazione PreservationAudioVisualFile}]
+\begin{lstlisting}[language=Python, caption={Codice finale, creazione Preservation Audio-Visual File (Packager)}]
 # Create Preservation Audio-Visual File with substituted audio
 video_file = files_name + '.mov'
 pvf_path = os.path.join(working_path, 'PreservationAudioVisualFile/', video_file)
@@ -220,7 +220,7 @@ Durante la scelta della soglia da adottare sono state eseguite diverse prove ed 
 
 La libreria pyacoustid, nelle prime fasi di scrittura dei test, non era ancora completamente funzionante né compresa del metodo per comparare le impronte digitali, infatti la sua versione 1.2.2, presente nella repository \href{https://pypi.org/}{PyPi}, non vedeva ancora implementata la funzione \verb|compare_fingerprints|, già presente invece nella sua repository GitHub grazie al contributo di un utente; tale implementazione era, però, non funzionante a causa di alcuni errori del codice come si può vedere dai cambiamenti applicati successivamente e descritti qui di seguito: 
 
-\begin{lstlisting}[language=diff]
+\begin{lstlisting}[language=diff, caption=Correzioni applicate in pyacoustid nel codice del confronto tra impronte]
 @@ -382,7 +382,7 @@ def _match_fingerprints(a: List[int], b: List[int]) -> float:       
              if biterror <= MAX_BIT_ERROR:
                  offset = i - j + bsize
@@ -230,9 +230,7 @@ La libreria pyacoustid, nelle prime fasi di scrittura dei test, non era ancora c
      return topcount / min(asize, bsize)
 
 
-@@ -397,8 +397,8 @@ def compare_fingerprints(a, b) -> float:
-         raise ModuleNotFoundError("function needs chromaprint")
-
+@@ -399,6 +399,6 @@ def compare_fingerprints(a, b) -> float:
      # decompress fingerprints
 -    a = [int(x) for x in chromaprint.decode_fingerprint(a)[0]]
 -    b = [int(x) for x in chromaprint.decode_fingerprint(b)[0]]
@@ -253,7 +251,7 @@ Per verificare l'uguaglianza tra gli stream video è stato utilizzato il \ac{PSN
 Il \ac{PSNR} è una misura di qualità di un'immagine compressa rispetto all'originale; viene definito come il rapporto tra la massima potenza di un segnale (immagine originale) e la potenza del rumore rispetto alla sua rappresentazione (immagine compressa).
 In questo caso si utilizzano al posto delle immagini originale e compressa, i frame dei 2 video da confrontare rispettivamente.
 
-\begin{lstlisting}[language=Python, caption=Test di comparazione di due file audio tramite il psnr]
+\begin{lstlisting}[language=Python, caption=Test di comparazione di due file audio tramite il PSNR]
 VIDEO_THRESHOLD = 25    # dB
 # [...]
 psnr_out = subprocess.run(["ffmpeg",    # video
@@ -284,7 +282,7 @@ Per le funzioni appena citate sono stati creati degli unit tests per le funziona
 Ove opportuno sono state scritte le docstings per le funzioni, ovvero la loro documentazione.
 
 Sono state anche aggiunte delle strutture di controllo per assicurare l'esecuzione da capo a fine in Windows, dato che alcune funzionalità non sono supportate dal sistema operativo di Microsoft:
-\begin{lstlisting}[language=diff]
+\begin{lstlisting}[language=diff, caption=Modifiche per permettere la compatibilità di Packager con Windows]
 - quit(os.EX_CONFIG)
 + if not sys.platform.startswith(('win', 'cygwin')):
 +     quit(os.EX_CONFIG)  # `os.EX_CONFIG` is not compatible with the above platforms in Python 3.10
@@ -294,7 +292,7 @@ Sono state anche aggiunte delle strutture di controllo per assicurare l'esecuzio
 Ciò è stato fatto nell'ottiva di garantire l'esecuzione multipiattaforma, nonostante in produzione il Packager sia eseguito in un container Linux.
 
 
-\section{\acs{CAE}-\acs{ARP} Audio Analyser} \label{sec:test-audioanalyser}
+\section{MPAI-CAE-ARP Audio Analyser} \label{sec:test-audioanalyser}
 Successivamente è stato preso in considerazione l'\ac{AIM} Audio Analyser.
 
 \begin{figure}[H]
@@ -395,7 +393,7 @@ Ad ogni esecuzione dei test è richiesto di inserire i dati nel report mostrato 
 \end{spacing}
 Il report viene compilato automaticamente in un file JSON come spiegato anche per il Packager (sottosezione \ref{ssec:packager-pre}).
 Un esempio è riportato di seguito:
-\lstinputlisting[language=json]{listings/audioanalyser-report.json}
+\lstinputlisting[language=json, caption={Esempio di report compilato sotto forma di file JSON, \acs{AIM} Audio Analyser}]{listings/audioanalyser-report.json}
 
 
 \subsection{Problemi pre-esistenti} \label{ssec:audioanalyser-pre}  % typos, video analyser usa : invece di . e workaround, in Windows scipy.signal.correlate da overflow perche tipo di default per numpy è int32, test non funzionanti
@@ -405,8 +403,8 @@ Questa problematica risiede nella libreria \texttt{mpai-cae-arp}, la quale viene
 Sono stati sistemati degli errori di battitura, alcuni dei quali impedivano il funzionamento del codice (vedi l'uso ambiguo di pydantic precedentemente permesso alla sottosezione \ref{ssec:mpaicaearp-pydantic})
 
 È stata aggiornata la versione richiesta della libreria mpai-cae-arp su cui sono basati tutti gli \ac{AIM} di \ac{ARP}:
-\begin{lstlisting}[language=diff]
-@@ -21,5 +21,5 @@ audio-analyser = 'audio_analyzer.cli:main'
+\begin{lstlisting}[language=diff, caption={Aggiornamento della libreria \texttt{mpai-cae-arp} in Audio Analyser, \texttt{pyproject.toml}}]
+@@ -21,5 +21,5 @@ 
     pandas = "^2.0.0"
     scikit-learn = "^1.2.2"
     grpcio-tools = "^1.53.0"
@@ -430,7 +428,7 @@ dove $O_c$ è l'offset calcolato, $O_r$ è l'offset reale e $FPS_{DS3}$ sono gli
 Gli FPS del video sono ottenuti tramite \href{https://ffmpeg.org/ffprobe.html}{ffprobe}, una utility di FFmpeg votata all'acquisizione di informazioni da file multimediali, tramite la richiesta di mostrare lo stream \verb|r_frame_rate|.\footnote{Si usa il comando \texttt{ffprobe -v 0 -of csv=p=0 -select\_streams v -show\_entries stream=r\_frame\_rate video\_path.mov}}
 
 Il codice utilizzato è il seguente:
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[language=Python, caption={Codice del test di conformità sulla differenza tra scostamento reale e calcolato, Audio Analyser}]
 @pytest.mark.parametrize("files_name", files_names)
 def test_offset_difference(files_name: str):
     """Conformance testing specification point c.
@@ -465,7 +463,7 @@ La libreria citata cerca di indovinare il tipo del file e ne restituisce il tipo
 
 \subsection{Come verificare che la classificazione sia coerente} \label{ssec:audio-analyser-classificazione}    % non necessario ma utile per capire che l'IA non da sempre stessi risultati, output utilizzati per gli altri test, recall, precision
 Per verificare se la rilevazione e la classificazione delle irregolarità sono coerenti con il dataset di test, è stata creata la funzione \verb|check_classification_results| che confronta 2 dizionari contenenti irregolarità e restituisce il numero di elementi diversi e dove si trovano queste diversità:
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[language=Python, caption=Codice che testa la costanza dei risultati della classificazione in Audio Analyser]
 def check_classification_results(if_dict_1: dict, if_dict_2: dict, print_differences: bool = False) -> (bool, int, int, int):
     """
     Check if the irregularity files' classification results in `if_dict_1` are exactly equal to `if_dict_2`.
@@ -607,17 +605,17 @@ Queste modifiche implicano il dover migrare \ac{ARP}, modificando i nomi dei cam
 
 \subsection{Bugfix: formato incorretto delle EditingList scritte su file} \label{ssec:mpaicaearp-formato-editinglist}
 Un bug presente nel codice di questa libreria salvava nel filesystem dei file con una formattazione errata, un esempio ne è l'\texttt{EditingList.json} che veniva salvato nella seguente maniera:
-\lstinputlisting[language=json, caption={\texttt{EditingList.json} salvato tramite la precedente modalità, contiene solo una stringa}]{listings/EditingList-badformat.json}
+\lstinputlisting[language=json, caption=\texttt{EditingList.json} salvato tramite la precedente modalità (errata): contiene solo una stringa]{listings/EditingList-badformat.json}
 Il JSON di cui sopra è composto da una sola stringa che contiene la rappresentazione dell'oggetto Python ed i caratteri di escape mostrati, ciò portava al fallimento del relativo test di conformità del Packager (\ref{sec:test-packager}).
 
 Il problema risiedeva nella chiamata di \texttt{json.dump} sulla stringa contenente l'oggetto da salvare in JSON generata da \texttt{model.json} (in Pydantic V2 chiamata \verb|model.model_dump_json|), questo comportamento probabilmente non era chiaro all'autore di questo codice per via del suo nome fuorviante; utilizzando, invece, la funzione di Pydantic V2 \verb|model.model_dump|, chiamata con parametro \texttt{mode='json'} per abilitare la serializzazione degli oggetti presenti nei campi della classe, si ottiene un dizionario Python che può essere scritto correttamente su file JSON (in Pydantic V1 la funzione corrispondente sarebbe stata \texttt{model.dict}, ma essa non fornisce la possibilità di serializzare gli oggetti).
 Ora il file precedente appare correttamente come:
-\lstinputlisting[language=json, caption={\texttt{EditingList.json} salvato tramite l'attuale modalità, contiene il dizionario con i suoi valori serializzati}]{listings/EditingList-goodformat.json}
+\lstinputlisting[language=json, caption=\texttt{EditingList.json} salvato tramite l'attuale modalità (corretta): contiene il dizionario con i suoi valori serializzati]{listings/EditingList-goodformat.json}
 
 
 \subsection{Bugfix: oggetti \texttt{AudioWave} non funzionanti, overflow e problemi con tracce a singolo canale} \label{ssec:mpaicaearp-audiowave}  % e fare riferimento a dtype del suo buffer nominato sopra
 La problematica di overflow limitata ai sistemi Windows descritta alla sottosezione \ref{ssec:audioanalyser-pre} è stata corretta col seguente codice:
-\begin{lstlisting}[language=diff]
+\begin{lstlisting}[language=diff, caption=Risoluzione del problema di overflow degli oggetti AudioWave]
 @@ -202,7 +202,7 @@ class AudioWave:
   data = np.array([
       int.from_bytes(raw_data[i:i + bit // 8], byteorder='little', signed=True)
@@ -629,7 +627,7 @@ La problematica di overflow limitata ai sistemi Windows descritta alla sottosezi
 \end{lstlisting}
 
 Questo, però, non era l'unico problema della classe AudioWave, infatti non erano supportate le tracce a singolo canale dato che l'indicizzazione di NumPy (operatore \texttt{[ ]}) non permette di operare su un array 1D come se fossero multidimensionali (ad esempio indicando il primo canale con \texttt{array[:,1]}).
-\begin{lstlisting}[language=diff]
+\begin{lstlisting}[language=diff, caption=Modifiche ad AudioWave.get\_channel che permettono di utilizzarlo con tracce ad 1 canale]
 @@ -369,39 + 369, 43 @@ class AudioWave:
   def get_channel(self, channel: int):
       # [...]

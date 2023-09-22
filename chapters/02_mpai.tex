@@ -13,7 +13,7 @@ Il comitato di \ac{MPAI} si impegna ad affrontare col coinvolgimento di esperti 
 Il progetto comprende diverse aree d'effetto tra cui il dialogo uomo-macchina, l'esperienza audio, la compressione video, l'esperienza di gioco online, la creazione di esperienze collaborative nel metaverso, la codifica di dati sanitari, i veicoli a guida autonoma e molti altri e la lista è in continua espansione.\footnote{Tutti i vari progetti sono visualizzabili sul \href{https://mpai.community/standards/}{sito di \ac{MPAI} alla voce \textit{Standards}}.}
 
 
-\section{MPAI-AIF, \acs{AIW} e \acsp{AIM}} \label{sec:aif-aiw-aim}
+\section{MPAI-AIF, AIW e AIMs} \label{sec:aif-aiw-aim}
 Ogni standard \ac{MPAI} è un \ac{AIF} \cite{mpaiMPAIAIFMPAICommunity}: un ambiente che comprende diversi \ac{AIW}, ognuno che descrive un certo caso d'uso. I blocchi costituenti un workflow sono detti \acp{AIM} ed ogni modulo è definito dalla sintassi e dalla semantica delle proprie interfacce di input e output, l'implementazione (hardware o software che sia) non è specificata; i vari moduli svolgono delle specifiche attività e sono interconnessi a formare un AIW come si può vedere dalla figura \ref{fig:mpai-aif-architecture}.
 
 \acs{AIF}, il modello fondante gli altri standard dell'organizzazione è stato adottato dall'\ac{IEEE} col nome \textit{IEEE 3301-2022} \cite{ieeeStandard3301-2022}.
@@ -44,22 +44,27 @@ Uno standard \ac{MPAI} è composto da un insieme di 4 documenti con i relativi s
     \item[Valutazione delle prestazioni (\textit{Performance Assessment})] Definisce gli attributi di Affidabilità (rispetto dello standard), Robustezza (capacità di gestione di nuovi dati), Equità (IA unbiased\footnote{Un'intelligenza artificiale può essere \textit{biased}, ovvero può "avere pregiudizi"; nel caso ottimo sono molto limitati (IA unbiased) perchè portano ad assunzioni errate.}) e Replicabilità (della valutazione) che vengono utilizzati per attribuire un voto all'implementazione (eventualmente dipendente da un certo dominio di applicazione).
 \end{description}
 
-\begin{adjustbox}{width=\textwidth}
-    \begin{tikzpicture}[
-        state/.style={rectangle, draw=black, align=center, minimum size=5mm},
-    ]
-        %Nodes
-        \node[state]  (TS)                    {Specifiche\\tecniche};
-        \node[state]  (RS)    [right=of TS]   {Software\\di riferimento};
-        \node[state]  (CT)    [right=of RS]   {Test\\di conformità};
-        \node[state]  (PA)    [right=of CT]   {Valutazione\\delle prestazioni};
-        
-        %Lines
-        \draw[->] (TS.east) -- (RS.west);
-        \draw[->] (RS.east) -- (CT.west);
-        \draw[->] (CT.east) -- (PA.west);
-    \end{tikzpicture}
-\end{adjustbox} % TODO decidere se inserire in una figure?
+\begin{figure}[H]
+    \centering
+    \begin{adjustbox}{width=\textwidth}
+        \begin{tikzpicture}[
+            state/.style={rectangle, draw=black, align=center, minimum size=5mm},
+        ]
+            %Nodes
+            \node[state]  (TS)                    {Specifiche\\tecniche};
+            \node[state]  (RS)    [right=of TS]   {Software\\di riferimento};
+            \node[state]  (CT)    [right=of RS]   {Test\\di conformità};
+            \node[state]  (PA)    [right=of CT]   {Valutazione\\delle prestazioni};
+            
+            %Lines
+            \draw[->] (TS.east) -- (RS.west);
+            \draw[->] (RS.east) -- (CT.west);
+            \draw[->] (CT.east) -- (PA.west);
+        \end{tikzpicture}
+    \end{adjustbox}
+    \caption{Documenti generati nel processo di creazione di uno standard \ac{MPAI}}
+    \label{fig:mpai-processo-standard}
+\end{figure}
 
 
 \section{MPAI-CAE} \label{sec:mpai-cae}
@@ -108,7 +113,7 @@ Facendo riferimento alla figura \ref{fig:arp-workflow} gli \acp{AIM} di \ac{ARP}
 \begin{description}
     \item[Audio Analyser] È l'\ac{AIM} che rileva le irregolarità nell'audio, estrae i segmenti di \qty{500}{\ms} in loro corrispondenza e li invia al classificatore.
     \item[Video Analyser] È l'\ac{AIM} che rileva le irregolarità nel video e cattura delle immagini in loro corrispondenza.
-    \item[Tape Irregularity Classifier] È l'\ac{AIM} che classifica le irregolarità di audio e video a partire dalle irregolarità rilevate da Audio Analyser e Video Analyser.   % TODO nel codice è compreso in aa e va? -> chiedere
+    \item[Tape Irregularity Classifier] È l'\ac{AIM} che classifica le irregolarità di audio e video a partire dalle irregolarità rilevate da Audio Analyser e Video Analyser.
     \item[Tape Audio Restoration] È l'\ac{AIM} che corregge velocità, equalizzazione e registrazione a rovescio dell'audio.
     \item[Packager] È l'\ac{AIM} che produce Access Copy Files e Preservation Master Files a partire dai file ricevuti dall'output degli altri \acp{AIM}.
 \end{description}
@@ -175,7 +180,7 @@ Le tipologie di irregolarità previste e riconosciute dallo standard sono riassu
         WF      &   Wow and flutter\\
         \hline
     \end{tabular}
-    \caption{Irregolarità rilevate da \ac{ARP}} \cite[tab. 21-22]{ieeeStandard3302-2022}
+    \caption{Irregolarità rilevabili da \ac{ARP}} \cite[tab. 21-22]{ieeeStandard3302-2022}
     \label{tab:arp-irrs}
 \end{table}
 

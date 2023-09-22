@@ -1,14 +1,25 @@
 %!TEX root = ../main.tex
 
 \chapter{Conclusioni} \label{chp:conclusioni}
+In conclusione si è visto perché e come operare una conservazione di opere musicali seguendo la traccia del software del \ac{CSC}.
+I test di conformità sono stati scritti seguendo il documento richiesto, talvolta si è percepita la pesantezza dell'organizzazione \ac{MPAI} per via dei molteplici documenti, anche ridondanti, che vengono prodotti, ma ciò probabilmente è necessario a causa dalle sue dimensioni ed estensioni e dalla sua voglia di crescere. Tale "pesantezza" non è, però, trasportata sullo sviluppo software che invece è gestito dai vari sottogruppi.   % TODO scrivere meglio
+Non sono stati riscontrati problemi irrisolti durante lo sviluppo del codice.
 
 
+\section{Cosa manca}  % gli altri AIMs e usare altri dataset per migliorare le soglie
+Per completare i lavori mancano i test di conformità per gli altri 3 \acp{AIM} che non sono stati scritti per limitazioni di tempo.
+
+Inoltre sarebbe opportuno ritoccare le soglie del controllo di uguaglianza per audio e video nei test del Packager (sottosezioni \ref{ssec:packager-audio} e \ref{ssec:packager-video}).
 
 
+\section{Obiettivi futuri}  % audio enhancement in input o basato su irregolarità, risvolti sulla fedeltà
+Come anticipato nella relativa sottosezione \ref{ssec:packager-video}, si può studiare un metodo migliore in termini di precisione del confronto tra i flussi audio.
 
+Inoltre, i fini di migliorare il prodotto finale si potrebbe:
+\begin{itemize}
+    \item Aggiungere uno stadio di miglioramento dell'audio rimuovendo le alterazioni eventualmente incontrate nella traccia audio (click, rumore, \dots) \cite{godsillDigitalAudioRestoration1998}.
+    Una proposta simile era già ipotizzata in \ac{CAE} come si può vedere dalla presenza di un \ac{AIM} chiamato "Audio Enhancer" in \cite{mpaiMPAICAEUseCases2021} nel 2021, ma è successivamente stato rimosso nelle iterazioni successive che hanno portato alla versione che attualmente è standard \citetitle{ieeeStandard3302-2022}.
+    \item Potenziare l'\ac{AIM} Tape Audio Restoraion abilitandolo a modificare l'audio della copia di accesso in corrispondenza e grazie alle informazioni delle irregolarità video trovate che possono aver deteriorato la resa acustica.
+\end{itemize}
 
-
-
-
-\section{Cosa manca come test}  % gli altri AIMs e usare altri dataset per migliorare le soglie
-\section{Cosa si potrebbe fare per l'audio digitalization/restoration}  % audio enhancement in input o basato su irregolarità, risvolti sulla fedeltà
+Queste proposte hanno come aspetto negativo la diminuzione della fedeltà dell'audio in output, ma ciò è completamente accettabile se operato solo e soltanto sulla copia di accesso.

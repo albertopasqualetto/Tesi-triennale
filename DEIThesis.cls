@@ -244,19 +244,18 @@
   \setlength{\headwidth}{\textwidth}
 
   % custom titles
-  \renewcommand{\listfigurename}{List of Figures}
-  \renewcommand{\listtablename}{List of Tables}
-  \renewcommand{\listalgorithmname}{List of Algorithms}
-  \renewcommand{\lstlistingname}{Code} % Caption name of code snippets
-  \renewcommand{\lstlistlistingname}{List of Code Snippets}
-  \def\listacronymname{List of Acronyms}
+  \renewcommand{\listfigurename}{Elenco delle Figure}
+  \renewcommand{\listtablename}{Elenco delle Tabelle}
+  \renewcommand{\listalgorithmname}{Elenco degli Algoritmi}
+  \renewcommand{\lstlistlistingname}{Elenco dei Frammenti di Codice}
+  \def\listacronymname{Lista degli Acronimi}
 
   \def\abstractname{Abstract}
   \def\abstractnameit{Sommario}
 
-  \renewcommand{\bibname}{References}
+  \renewcommand{\bibname}{Bibliografia}
 
-  \def\acknowledgmentsname{Acknowledgments}
+  \def\acknowledgmentsname{Ringraziamenti}
 
   % insert dedication page
   \dedicationpage
@@ -270,34 +269,37 @@
 
   % insert list of figures
   \phantomsection
-  \setcounter{page}{11}
+  % \setcounter{page}{11}
   \addcontentsline{toc}{chapter}{\listfigurename}
   \listoffigures
   \cleardoublepage
 
   % insert list of tables
   \phantomsection
-  \setcounter{page}{13}
+  % \setcounter{page}{13}
   \addcontentsline{toc}{chapter}{\listtablename}
   \listoftables
   \cleardoublepage
 
   % insert list of algorithms
-  \phantomsection
-  \setcounter{page}{15}
-  \addcontentsline{toc}{chapter}{\listalgorithmname}
-  \listofalgorithms
+  % \phantomsection
+  % \setcounter{page}{15}
+  % \addcontentsline{toc}{chapter}{\listalgorithmname}
+  % \listofalgorithms
 
   % insert list of code snippets
   \phantomsection
-  \setcounter{page}{17}
+  % \setcounter{page}{17}
   \addcontentsline{toc}{chapter}{\lstlistlistingname}
   \lstlistoflistings
   \cleardoublepage
 
   % insert list of abbreviations/acronyms
-  \setcounter{page}{19}
+  % \setcounter{page}{19}
   \acronyms
+  \thispagestyle{empty}
+  \mbox{} % Testo vuoto per forzare la pagina bianca
+  \cleardoublepage
 }
 
 
@@ -448,10 +450,10 @@
 
 \newcommand{\abstractpage} {
   % set empty style for this page (no headers and footers)
-  \thispagestyle{empty}
 
   % english version
-  \input{frontmatter/abstract}
+  % \thispagestyle{empty}
+  % \input{frontmatter/abstract}
   
   % italian version
   \cleardoublepage
@@ -510,7 +512,7 @@
 
 \VerbatimFootnotes
 
-\renewcommand{\lstlistingname}{Codice}
+\renewcommand{\lstlistingname}{Codice} % Caption name of code snippets
 \renewcommand{\lstlistlistingname}{Codici}
 
 % Colors for code snippets highlights
