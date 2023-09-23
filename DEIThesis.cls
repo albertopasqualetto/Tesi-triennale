@@ -27,6 +27,8 @@
   a4paper
 ]{geometry}
 
+\RequirePackage{floatrow}
+
 % export in PDF/X, PDF/A, etc...
 \RequirePackage{etoolbox}
 \RequirePackage{colorprofiles}
@@ -37,7 +39,7 @@
 \RequirePackage[T1]{fontenc}
 \RequirePackage[italian]{babel}
 
-\hyphenpenalty=500
+\hyphenpenalty=600
 
 % -- USEFUL PACKAGES --
 
@@ -89,6 +91,8 @@
 % plots, drawings etc...
 \RequirePackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+
+\RequirePackage[edges]{forest}
 
 \RequirePackage{tabularx}
 
@@ -591,4 +595,55 @@
         {\}}{{{\color{jsondelim}{\}}}}}{1}
         {[}{{{\color{jsondelim}{[}}}}{1}
         {]}{{{\color{jsondelim}{]}}}}{1},
+}
+
+
+% -- FILE TREES --
+
+% Style of file trees
+\definecolor{folderbg}{RGB}{124,166,198}
+\definecolor{folderborder}{RGB}{110,144,169}
+
+\newlength\Size
+\setlength\Size{4pt}
+
+\tikzset{
+    folder/.pic={
+        \filldraw [draw=folderborder, top color=folderbg!50, bottom color=folderbg] (-1.05*\Size,0.2\Size+5pt) rectangle ++(.75*\Size,-0.2\Size-5pt);
+        \filldraw [draw=folderborder, top color=folderbg!50, bottom color=folderbg] (-1.15*\Size,-\Size) rectangle (1.15*\Size,\Size);
+    },
+    file/.pic={
+        \filldraw [draw=folderborder, top color=folderbg!5, bottom color=folderbg!10] (-\Size,.4*\Size+5pt) coordinate (a) |- (\Size,-1.2*\Size) coordinate (b) -- ++(0,1.6*\Size) coordinate (c) -- ++(-5pt,5pt) coordinate (d) -- cycle (d) |- (c) ;
+    },
+    multifiles/.pic={
+        \filldraw [draw=folderborder, top color=folderbg!5, bottom color=folderbg!10, shift={(-\Size*0.5, \Size*0.5)}] (-\Size,.4*\Size+5pt) coordinate (a) |- (\Size,-1.2*\Size) coordinate (b) -- ++(0,1.6*\Size) coordinate (c) -- ++(-5pt,5pt) coordinate (d) -- cycle (d) |- (c) ;
+        \filldraw [draw=folderborder, top color=folderbg!5, bottom color=folderbg!10] (-\Size,.4*\Size+5pt) coordinate (a) |- (\Size,-1.2*\Size) coordinate (b) -- ++(0,1.6*\Size) coordinate (c) -- ++(-5pt,5pt) coordinate (d) -- cycle (d) |- (c) ;
+        \filldraw [draw=folderborder, top color=folderbg!5, bottom color=folderbg!10, shift={(\Size*0.5, -\Size*0.5)}] (-\Size,.4*\Size+5pt) coordinate (a) |- (\Size,-1.2*\Size) coordinate (b) -- ++(0,1.6*\Size) coordinate (c) -- ++(-5pt,5pt) coordinate (d) -- cycle (d) |- (c) ;
+    },
+}
+\forestset{
+    declare autowrapped toks={pic me}{},
+    pic dir tree/.style={
+        for tree={
+            folder,
+            font=\footnotesize\ttfamily,
+            grow'=0,
+        },
+        before typesetting nodes={
+            for tree={
+                edge label+/.option={pic me},
+            },
+        },
+    },
+    pic me set/.code n args=2{
+        \forestset{
+            #1/.style={
+                inner xsep=2\Size,
+                pic me={pic {#2}},
+            }
+        }
+    },
+    pic me set={directory}{folder},
+    pic me set={file}{file},
+    pic me set={multifiles}{multifiles},
 }

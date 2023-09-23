@@ -180,9 +180,106 @@ Le tipologie di irregolarità previste e riconosciute dallo standard sono riassu
         WF      &   Wow and flutter\\
         \hline
     \end{tabular}
-    \caption{Irregolarità rilevabili da \ac{ARP}} \cite[tab. 21-22]{ieeeStandard3302-2022}
+    \caption{Irregolarità rilevabili da \ac{ARP} \cite[tab. 21-22]{ieeeStandard3302-2022}}
     \label{tab:arp-irrs}
 \end{table}
+
+L'albero delle cartelle previsto è riportato in figura \ref{fig:arp-filetree}.
+
+\begin{figure}
+    \centering
+    \begin{adjustbox}{max height=0.95\textheight}
+        \begin{forest}
+            pic dir tree,
+            where level=0{}{    % folder icons by default; override using file for file icons etc.
+                directory,
+            },
+            for tree={s sep-=8pt}
+            [data
+                [AccessCopyFiles
+                    [BERIO052
+                        [EditingList.json, file]
+                        [IrregularityFile.json, file]
+                        [IrregularityImages.zip, file]
+                        [RestoredAudioFiles
+                            [BERIO052.wav, file]
+                        ]
+                    ]
+                    [BERIO100
+                        [(...), multifiles]
+                        % [EditingList.json]
+                        % [IrregularityFile.json]
+                        % [IrregularityImages.zip]
+                        % [RestoredAudioFiles
+                        %     [BERIO100.wav]
+                        % ]
+                    ]
+                ]
+                [PreservationAudioFile
+                    [BERIO052.wav, file]
+                    [BERIO100.wav, file]
+                ]
+                [PreservationAudioVisualFile
+                    [BERIO052.mov, file]
+                    [BERIO100.mov, file]
+                ]
+                [PreservationMasterFiles
+                    [BERIO052
+                        [IrregularityFile.json, file]
+                        [IrregularityImages.zip, file]
+                        [PreservationAudioFile.wav, file]
+                        [PreservationAudioVisualFile.mov, file]
+                    ]
+                    [BERIO100
+                        [(...), multifiles]
+                        % [IrregularityFile.json]
+                        % [IrregularityImages.zip]
+                        % [PreservationAudioFile.wav]
+                        % [PreservationAudioVisualFile.mov]
+                    ]
+                ]
+                [temp
+                    [BERIO052
+                        [AudioAnalyser\_IrregularityFileOutput1.json, file]
+                        [AudioAnalyser\_IrregularityFileOutput2.json, file]
+                        [EditingList.json, file]
+                        [my\_tape\_areas.jpg, file]
+                        [TapeIrregularityClassifier\_IrregularityFileOutput1.json, file]
+                        [TapeIrregularityClassifier\_IrregularityFileOutput2.json, file]
+                        [VideoAnalyser\_IrregularityFileOutput1.json, file]
+                        [VideoAnalyser\_IrregularityFileOutput2.json, file]
+                        [AudioBlocks]
+                        [IrregularityImages]
+                        [RestoredAudioFiles
+                            [BERIO052.wav, file]
+                        ]
+                    ]
+                    [BERIO052fromAudioAnalyser]
+                    [BERIO100
+                        [(...), multifiles]
+                        % [AudioAnalyser\_IrregularityFileOutput1.json]
+                        % [AudioAnalyser\_IrregularityFileOutput2.json]
+                        % [EditingList.json]
+                        % [my\_tape\_areas.jpg]
+                        % [TapeIrregularityClassifier\_IrregularityFileOutput1.json]
+                        % [TapeIrregularityClassifier\_IrregularityFileOutput2.json]
+                        % [VideoAnalyser\_IrregularityFileOutput1.json]
+                        % [VideoAnalyser\_IrregularityFileOutput2.json]
+                        % [AudioBlocks]
+                        % [IrregularityImages]
+                        % [RestoredAudioFiles
+                        %     [BERIO100.wav]
+                        % ]
+                    ]
+                    [BERIO100fromAudioAnalyser]
+                ]
+            ]
+        \end{forest}
+    \end{adjustbox}
+    \caption{Albero delle cartelle previsto da \ac{ARP}}
+    \label{fig:arp-filetree}
+\end{figure}
+
 
 
 % TODO scrivere di più? o basta quello scritto in csc-digitalizzazione; in caso aggiungere alla fine
