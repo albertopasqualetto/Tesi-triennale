@@ -6,6 +6,8 @@ Abstract:
 
 ---
 
+`Pasqualetto_Alberto.pdf` è il file LaTeX compilato.
+
 Nella cartella `Code-freezed` si trovano gli AI Modules e la libreria mpai-cae-arp clonati dall'istanza GitLab del DEI il giorno 25/09/2023.
 
 Nella cartella `Notebooks` si trovano dei notebook Pyhton che aiutano nella comprensione di alcune scelte.
