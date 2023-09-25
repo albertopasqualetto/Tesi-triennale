@@ -2,7 +2,7 @@
 
 \chapter{Conclusioni} \label{chp:conclusioni}
 In conclusione si è visto perché e come conservare opere musicali seguendo la traccia del software del \ac{CSC}.
-I test di conformità sono stati scritti seguendo il documento che li descrive; talvolta si è percepita la pesantezza dell'articolata struttura di \ac{MPAI} per via dei molteplici documenti, anche ridondanti, che vengono prodotti, ma ciò probabilmente è dovuto alle dimensioni, le estensioni e la voglia di crescere dell'organizzazione. Tale "pesantezza" non è, però, avvertita nello sviluppo software, che invece è gestito dai vari sottogruppi.   % TODO scrivere meglio
+I test di conformità sono stati scritti seguendo il documento che li descrive; talvolta si è percepita la pesantezza dell'articolata struttura di \ac{MPAI} per via dei molteplici documenti, anche ridondanti, che vengono prodotti, ma ciò probabilmente è dovuto alle dimensioni, le estensioni e la voglia di crescere dell'organizzazione. Tale "pesantezza" non è, però, avvertita nello sviluppo software, che invece è gestito dai vari sottogruppi.
 
 Non sono stati riscontrati problemi irrisolti durante lo sviluppo del codice.
 
@@ -18,9 +18,13 @@ Come anticipato nella relativa sottosezione \ref{ssec:packager-video}, si può s
 
 Inoltre, ai fini di migliorare il prodotto finale si potrebbe:
 \begin{itemize}
-    \item Aggiungere uno stadio di miglioramento dell'audio rimuovendo le alterazioni eventualmente incontrate nella traccia audio (click, rumore, \dots) \cite{godsillDigitalAudioRestoration1998}.
-    Una proposta simile era già stata ipotizzata in \ac{CAE}, come si può vedere dalla presenza di un \ac{AIM} chiamato "Audio Enhancer" in \cite{mpaiMPAICAEUseCases2021} nel 2021, quest'ultimo è stato rimosso nelle iterazioni successive, le quali hanno portato alla versione che attualmente è standard: \citetitle{ieeeStandard3302-2022}.
-    \item Potenziare l'\ac{AIM} Tape Audio Restoraion abilitandolo a modificare, magari tramite l'uso di \acl{IA}, l'audio della copia di accesso in corrispondenza delle irregolarità video grazie alle informazioni sulla loro tipologia. Tali discontinuità possono aver deteriorato la resa acustica del nastro.
+    \item \begin{onehalfspace}
+        Aggiungere uno stadio di miglioramento dell'audio rimuovendo le alterazioni eventualmente incontrate nella traccia audio (click, rumore, \dots) \cite{godsillDigitalAudioRestoration1998}.
+        Una proposta simile era già stata ipotizzata in \ac{CAE}, come si può vedere dalla presenza di un \ac{AIM} chiamato "Audio Enhancer" in \cite{mpaiMPAICAEUseCases2021} nel 2021, quest'ultimo è stato rimosso nelle iterazioni successive, le quali hanno portato alla versione che attualmente è standard: \citetitle{ieeeStandard3302-2022}.
+    \end{onehalfspace}
+    \item \begin{onehalfspace}
+        Potenziare l'\ac{AIM} Tape Audio Restoration abilitandolo a modificare, magari tramite l'uso di \acl{IA}, l'audio della copia di accesso in corrispondenza delle irregolarità video grazie alle informazioni sulla loro tipologia. Tali discontinuità possono aver deteriorato la resa acustica del nastro.
+    \end{onehalfspace}
 \end{itemize}
 
 L'aspetto negativo di queste proposte è la diminuzione della fedeltà dell'audio in output, ma ciò è completamente accettabile se operato solo e soltanto sulla copia di accesso.

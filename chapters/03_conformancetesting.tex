@@ -2,7 +2,7 @@
 
 \chapter{Conformance Testing} \label{chp:conformancetesting}    % a che serve, con specifica ambiente di sviluppo (python, poetry, git, gitlab DEI)
 I test di conformità, come anticipato nella sezione \ref{sec:standard-mpai}, sono un insieme di attività di verifica che determinano l'aderenza di un processo, prodotto o servizio a dei requisiti tecnici o a delle norme.
-Nel caso in esame, \ac{ARP}, si tratta di verificare che il suo funzionamento segua, entro certi limiti (necessari anche perchè è una \acs{IA}), le specifiche tecniche. In \ac{MPAI}, questi test, sono definiti all'interno di un documento apposito.
+Nel caso in esame, \ac{ARP}, si tratta di verificare che il suo funzionamento segua, entro certi limiti (necessari anche perchè è una \ac{IA}), le specifiche tecniche. In \ac{MPAI}, questi test, sono definiti all'interno di un documento apposito.
 
 L'obiettivo di questa tesi è quella di scrivere il codice dei test di conformità, basandosi sul documento che li descrive fornito da MPAI.
 
@@ -14,7 +14,7 @@ Il software testing è il processo di valutazione e verifica del corretto funzio
 Solitamente si tende ad automatizzare i test attraverso alcuni framework in modo tale da poterli eseguire ad ogni modifica del codice.
 
 Il \acfi{TDD} è un approccio allo sviluppo di software che prevede la scrittura dei test prima di quella del codice ai quali deve essere sottoposto; inoltre i test vanno ripetuti parallelamente allo sviluppo del software.
-I test di conformità sono il documento ed i test stessi che l'implementazione software delle specifiche tecniche dovranno rispettare, quindi la loro scrittura e comunque una correzione del codice basandosi su di essi può essere riconosciuta come un approccio di \ac{TDD}. % TODO vedere se dare più importanza
+I test di conformità sono il documento ed i test stessi che l'implementazione software delle specifiche tecniche dovranno rispettare, quindi la loro scrittura e comunque una correzione del codice basandosi su di essi può essere riconosciuta come un approccio di \ac{TDD}.
 
 
 \subsection{Pytest} \label{ssec:pytest} % funzionamento/utlità, xdist per parallelizzare, json-report per scrivere il report richiesto, fixtures per eseguire funzione per ogni file
@@ -161,11 +161,11 @@ except OSError:
 \end{lstlisting}
 
 Il primo problema è relativo alla sincronizzazione del video con l'audio: l'audio deve essere anticipato se viene trovato uno scostamento A/V positivo, altrimenti deve essere anticipato il video.
-Alle righe 12-16 si osserva che il comportamento non è quello richiesto: dato che a riga 16 l'offset ha valore negativo, allora \href{https://zulko.github.io/moviepy/}{MoviePy}, libreria utilizzata per eseguire editing video, farà iniziare la traccia a partire da $|offset|$ secondi prima del termine della clip.\footnote{Codice sorgente: \url{https://zulko.github.io/moviepy/_modules/moviepy/Clip.html\#Clip.subclip}}    % TODO da verificare se vero
+Alle righe 12-16 si osserva che il comportamento non è quello richiesto: dato che a riga 16 l'offset ha valore negativo, allora \href{https://zulko.github.io/moviepy/}{MoviePy}, libreria utilizzata per eseguire editing video, farà iniziare la traccia a partire da $|offset|$ secondi prima del termine della clip.\footnote{Codice sorgente: \url{https://zulko.github.io/moviepy/_modules/moviepy/Clip.html\#Clip.subclip}}
 
 Il secondo problema è relativo alla non specifica nel codice della codifica audio che porta la libreria MoviePy a ricadere nel comportamento di default ovvero generare un file con codifica MP3 (lossy) a \qty{44100}{\Hz} e ad avere di conseguenza, in questo caso, una transcodifica, il che non è ottimale per un software che ha come obiettivo la conservazione di documenti audio in alta qualità.
 
-Il terzo problema invece è provocato dalla libreria \href{https://zulko.github.io/moviepy/}{MoviePy} che, per motivi sconosciuti e solo in alcuni casi, genera file corrotti nella traccia video, nello specifico che si bloccano dopo alcuni secondi.  % TODO verificare se c'entra con il problema di cui sopra.
+Il terzo problema invece è provocato dalla libreria \href{https://zulko.github.io/moviepy/}{MoviePy} che, per motivi sconosciuti e solo in alcuni casi, genera file corrotti nella traccia video, nello specifico che si bloccano dopo alcuni secondi.
 
 Per risolvere questi due problemi si è scelto di sostituire MoviePy direttamente con \href{https://ffmpeg.org/}{FFmpeg}, ottenendo come risultato il seguente codice:
 \begin{lstlisting}[language=Python, caption={Codice finale, creazione Preservation Audio-Visual File (Packager)}]
@@ -201,7 +201,7 @@ except OSError:
 
 
 \subsection{Come verificare l'uguaglianza tra tracce audio} \label{ssec:packager-audio}    % fingerprinting con chromaprint, suo wrapper in python, free software e mie contribuzioni, comunicare col mantainer
-Per verificare l'uguaglianza fra tracce audio, inizialmente si è provato un confronto tramite le librerie \textit{hashlib} o \textit{filecmp}, ma entrambi i test non hanno avuto successo perchè in alcuni casi non è richiesto di verificare che il file sia lo stesso identico (stesso hash), ma piuttosto di controllare che il suono sia il medesimo.\footnote{La differenza si osserva, per esempio, quando si hanno 2 file, uno scostato di qualche secondo rispetto all'altro; questo è ciò che accade nel caso in esame quando si esegue la sincronizzazione audio/video.}
+Per verificare l'uguaglianza fra tracce audio, inizialmente si è provato un confronto tramite le librerie \textit{hashlib} o \textit{filecmp}, ma entrambi i test non hanno avuto successo perché in alcuni casi non è richiesto di verificare che il file sia lo stesso identico (stesso hash), ma piuttosto di controllare che il suono sia il medesimo.\footnote{La differenza si osserva, per esempio, quando si hanno 2 file, uno scostato di qualche secondo rispetto all'altro; questo è ciò che accade nel caso in esame quando si esegue la sincronizzazione audio/video.}
 
 La soluzione trovata si basa sulla libreria \href{https://acoustid.org/chromaprint}{chromaprint}\footnote{chromaprint è la libreria che è alla base del progetto AcoustID, utilizzato nel piuttosto famoso software \href{https://musicbrainz.org/}{MusicBrainz} (\href{https://picard.musicbrainz.org/}{Picard}) che serve a taggare le proprie tracce musicali.}, la quale permette di ricavare un'impronta digitale (\textit{fingerprint}) a partire da una traccia audio in maniera da poi confrontare due impronte tra loro per ottenere una misura della somiglianza tra le rispettive tracce.    % TODO taggare va bene?
 
@@ -290,7 +290,7 @@ Sono state anche aggiunte delle strutture di controllo per assicurare l'esecuzio
 + else:
 +     quit()
 \end{lstlisting}
-Ciò è stato fatto nell'ottiva di garantire l'esecuzione multipiattaforma, nonostante in produzione il Packager sia eseguito in un container Linux.
+Ciò è stato fatto nell'ottica di garantire l'esecuzione multipiattaforma, nonostante in produzione il Packager sia eseguito in un container Linux.
 
 
 \section{MPAI-CAE-ARP Audio Analyser} \label{sec:test-audioanalyser}
@@ -400,13 +400,13 @@ Un esempio è riportato di seguito:
 
 
 \subsection{Problemi pre-esistenti} \label{ssec:audioanalyser-pre}  % typos, video analyser usa : invece di . e workaround, in Windows scipy.signal.correlate da overflow perche tipo di default per numpy è int32, test non funzionanti
-Alla prima esecuzione del modulo, ancora prima di scrivere i test richiesti, si è notato che l'offset calcolato fosse estremamente diverso da quello fornito nei dataset di esempio, nello specifico si osservava addirittura uno scostamento di segno opposto. Indagando si è riscontrato che il problema si presentasse solo nel caso di utilizzo del codice su piattaforme Windows ed infine si è visto che l'errore fosse dato dal fatto che il tipo di dato di default per numpy in Windows è \texttt{int32} anche in macchine a 64 bit, mentre in ambiente Unix (ancora una volta si far riferimento a problemi non riscontrabili in produzione) il default è \texttt{int64}; passando il tipo necessario manualmente, il problema di overflow alla chiamata di \texttt{scipy.signal.correlate} non si presenta più.\footnote{\url{https://github.com/numpy/numpy/issues/9464}}
+Alla prima esecuzione del modulo, ancora prima di scrivere i test richiesti, si è notato che l'offset calcolato fosse estremamente diverso da quello fornito nei dataset di esempio, nello specifico si osservava addirittura uno scostamento di segno opposto. Indagando si è riscontrato che il problema si presentasse solo nel caso di utilizzo del codice su piattaforme Windows ed infine si è visto che l'errore fosse dato dal fatto che il tipo di dato di default per NumPy in Windows è \texttt{int32} anche in macchine a 64 bit, mentre in ambiente Unix (ancora una volta si far riferimento a problemi non riscontrabili in produzione) il default è \texttt{int64}; passando il tipo necessario manualmente, il problema di overflow alla chiamata di \texttt{scipy.signal.correlate} non si presenta più.\footnote{\url{https://github.com/numpy/numpy/issues/9464}}
 Questa problematica risiede nella libreria \texttt{mpai-cae-arp}, la quale viene discussa nella sezione \ref{sec:lib-mpaicaearp}.   % TODO dovrei nominare prima scipy.signal.correlate?
 
-Sono stati sistemati degli errori di battitura, alcuni dei quali impedivano il funzionamento del codice (vedi l'uso ambiguo di pydantic precedentemente permesso alla sottosezione \ref{ssec:mpaicaearp-pydantic})
+Sono stati sistemati degli errori di battitura, alcuni dei quali impedivano il funzionamento del codice (vedi l'uso ambiguo di Pydantic precedentemente permesso alla sottosezione \ref{ssec:mpaicaearp-pydantic})
 
 È stata aggiornata la versione richiesta della libreria mpai-cae-arp su cui sono basati tutti gli \ac{AIM} di \ac{ARP}:
-\begin{lstlisting}[language=diff, caption={Aggiornamento della libreria \texttt{mpai-cae-arp} in Audio Analyser, \texttt{pyproject.toml}}]
+\begin{lstlisting}[language=diff, caption={Aggiornamento della libreria \texttt{mpai-cae-arp} in Audio Analyser, file \texttt{pyproject.toml}}]
 @@ -21,5 +21,5 @@ 
     pandas = "^2.0.0"
     scikit-learn = "^1.2.2"
@@ -543,7 +543,6 @@ def check_classification_results(if_dict_1: dict, if_dict_2: dict, print_differe
 Quando si ha a che fare con algoritmi basati sul machine learning è la norma avere risultati non deterministici per via della componente di casualità che spesso vi è inserita.
 Infatti il test che verifica l'esatta uguaglianza tra le 2 collezioni di irregolarità (\verb|test_audio_classification|) lo si è sempre visto fallire durante le sue esecuzioni, infatti esso non è richiesto dal documento descrivente i test di conformità.
 Ciò che è richiesto e che si basa sul codice appena citato, invece, è di controllare che tutte e sole le irregolarità presenti nel file di test siano presenti anche nel file in output ad una nuova esecuzione dell'Audio Analyser e che siano correttamente estratti i frammenti di audio agli istanti di tempo richiesti (punto 1.e di \ref{tab:audioanalyser-valutazione}) e che inoltre la precisione ed il recupero\footnote{Precisione e recupero (\textit{Precision} e \textit{Recall}) sono entrambe metriche sulle prestazioni di una classificazione: $Precision=\frac{True\ Positives}{True\ Positives + False\ Positives}$; $Recall=\frac{True\ Positives}{True\ Positives + False\ Negatives}$.} medi delle irregolarità trovate rispetto al dizionario delle irregolarità di riferimento, il dataset 4, siano entrambi $>0.9$ considerando l'istante di tempo ed i canali audio a cui appartengono le irregolarità (punto 2 di \ref{tab:audioanalyser-valutazione}).
-% TODO scrivere meglio
 
 
 \section{Parallelizzare o no? confronto di velocità} \label{sec:parallelizzazione}
@@ -594,7 +593,6 @@ Ciò non toglie che con un numero maggiore di pacchetti di dataset, la paralleli
 \section{Libreria \texttt{mpai-cae-arp}} \label{sec:lib-mpaicaearp} % a cosa serve
 La libreria \href{https://pypi.org/project/mpai-cae-arp/}{mpai-cae-arp} contiene le classi, le costanti e le funzioni su cui si basano tutti gli \acp{AIM} di \ac{ARP} e che permettono loro di interoperare.
 Per via della sua ampia influenza, alcuni problemi relativi a questa libreria sono stati discussi in altre sezioni (vedi \ref{ssec:audioanalyser-pre}).
-% TODO scrivere altro?
 
 
 \subsection{I problemi di Pydantic} \label{ssec:mpaicaearp-pydantic}    % che ha portato a dover aggiornare i moduli
@@ -665,8 +663,8 @@ La libreria \href{https://librosa.org/}{librosa} (analisi audio) richiede la lib
   grpcio-tools = "^1.53.0"
 \end{lstlisting}
 Questa modifica è possibile solo in seguito all'1 maggio 2023 (data successiva all'ultimo commit presente nella repository prima dell'inizio di questo lavoro), quando le librerie citate hanno introdotto la cross-compatibilità tra le nuove versioni.\footnote{Dipendenza di librosa da Numba: \url{https://github.com/librosa/librosa/blob/43d4427f7a389acc79b5be3c924646701f19bb46/setup.cfg\#L67};\\
-Dipendenze di Numba da llvmlite e Numpy: \url{https://github.com/numba/numba/blob/596e8a55334cc46854e3192766e643767bd7c934/setup.py\#L367};\\
-Numba 0.57 introduce il supporto a Python 3.11 e Numpy 1.24: \url{https://numba.readthedocs.io/en/stable/release-notes.html\#version-0-57-0-1-may-2023};\\
+Dipendenze di Numba da llvmlite e NumPy: \url{https://github.com/numba/numba/blob/596e8a55334cc46854e3192766e643767bd7c934/setup.py\#L367};\\
+Numba 0.57 introduce il supporto a Python 3.11 e NumPy 1.24: \url{https://numba.readthedocs.io/en/stable/release-notes.html\#version-0-57-0-1-may-2023};\\
 llvmlite 0.40.0 introduce il supporto a Python 3.11: \url{https://llvmlite.readthedocs.io/en/latest/release-notes.html\#v0-40-0-may-1-2023}.}
 
 Questi aggiornamenti hanno permesso la possibilità, prima non presente, di utilizzare la libreria, e quindi di conseguenza \ac{ARP} con la versione di Python 3.11, rendendo la libreria più "a prova di futuro".

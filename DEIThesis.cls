@@ -9,12 +9,13 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{DEIThesis}[DEI Thesis Class]
 
-
+% require hyphens option before requiring url
+\RequirePackage[hyphens]{url}
 
 % -- GENERAL SETUP --
 
 % type
-\LoadClass[12pt, a4paper, twoside, openright]{book}
+\LoadClass[12pt, a4paper, oneside, openright]{book}
 
 % page geometry
 \RequirePackage[
@@ -23,11 +24,9 @@
   bottom=3.5cm,
   footskip=1.5cm,
   footnotesep=1cm,
-  twoside,
+  % twoside,
   a4paper
 ]{geometry}
-
-\RequirePackage{floatrow}
 
 % export in PDF/X, PDF/A, etc...
 \RequirePackage{etoolbox}
@@ -53,6 +52,9 @@
 \RequirePackage{caption}
 \RequirePackage{subcaption}
 
+% links
+\RequirePackage{hyperref}
+
 % footnotes
 \RequirePackage{footnote}
 \RequirePackage[bottom]{footmisc}
@@ -69,10 +71,6 @@
 % mathematics
 \RequirePackage{amsmath}
 \RequirePackage{siunitx}
-
-% links
-\RequirePackage{hyperref}
-% \RequirePackage{url}
 
 % colors
 \RequirePackage{xcolor}
@@ -221,7 +219,7 @@
 \newcommand{\setfancyhf} {
   \fancyhf{}
   \fancyhead[RO]{{\footnotesize\leftmark}}
-  \fancyhead[LE]{{\footnotesize\rightmark}}
+  % \fancyhead[LE]{{\footnotesize\rightmark}}
   \fancyfoot[RE, LO]{}
   \fancyfoot[C]{\thepage}
 }
@@ -252,7 +250,7 @@
   \renewcommand{\listtablename}{Elenco delle Tabelle}
   \renewcommand{\listalgorithmname}{Elenco degli Algoritmi}
   \renewcommand{\lstlistlistingname}{Elenco dei Frammenti di Codice}
-  \def\listacronymname{Lista degli Acronimi}
+  \def\listacronymname{Elenco degli Acronimi}
 
   \def\abstractname{Abstract}
   \def\abstractnameit{Sommario}
@@ -262,7 +260,7 @@
   \def\acknowledgmentsname{Ringraziamenti}
 
   % insert dedication page
-  \dedicationpage
+  % \dedicationpage
 
   % insert abstract
   \abstractpage
@@ -301,8 +299,8 @@
   % insert list of abbreviations/acronyms
   % \setcounter{page}{19}
   \acronyms
-  \thispagestyle{empty}
-  \mbox{} % Testo vuoto per forzare la pagina bianca
+  % \thispagestyle{empty}
+  % \mbox{} % Testo vuoto per forzare la pagina bianca
   \cleardoublepage
 }
 
@@ -337,7 +335,7 @@
   }
 
   % set academic year in footer
-  \cfoot{\normalsize\textsc{Academic Year \\ \@academicYear}}
+  \cfoot{\normalsize\textsc{Anno Accademico \\ \@academicYear}}
 
   % set brands in header
   \lhead{
@@ -353,7 +351,9 @@
     % bachelor name
     \null \vspace{\stretch{2}}
     \normalsize\textsc{
-      Bachelor Thesis in \@bachelorname
+        Dipartimento di Ingegneria dell'Informazione\\
+        \vspace{1ex}
+        \large Corso di Laurea Triennale in \@bachelorname
     } \\
 
     % title
@@ -366,18 +366,26 @@
 
     \begin{flushleft}
       \small
-      \textsc{Bachelor Candidate} \hfill \textsc{Supervisor} \\
+      \textsc{Laureando} \hfill \textsc{Relatore} \\
       \large{\textbf{\@author}} \hfill \large{\textbf{\@advisor}} \\
       \small
-      \textbf{Student ID \@studentId} \hfill \textbf{\@university} \\
+      \textbf{Matricola \@studentId} \hfill \textbf{\@university} \\
       % insert co-advisor if not empty
-      \ifx\@coadvisor\empty \else
+      % \ifx\@coadvisor\empty \else
+      %   \hfill \\
+      %   \hfill \textsc{Correlatori} \\
+      %   \hfill \large{\textbf{\@coadvisor}} \\
+      %   \small
+      %   \hfill \textbf{\@coadvisorsUniversity} \\
+      % \fi
         \hfill \\
-        \hfill \textsc{Co-supervisor} \\
-        \hfill \large{\textbf{\@coadvisor}} \\
+        \hfill \textsc{Correlatori} \\
+        \hfill \large{\textbf{Dott. Alessandro Russo}} \\
         \small
-        \hfill \textbf{\@coadvisorsUniversity} \\
-      \fi
+        \hfill \textbf{Università degli Studi di Padova} \\
+        \hfill \large{\textbf{Dott. Matteo Spanio}} \\
+        \small
+        \hfill \textbf{Audio Innova} \\
     \end{flushleft}
 
     \vspace{\stretch{1}} \null
@@ -520,11 +528,11 @@
 \renewcommand{\lstlistlistingname}{Codici}
 
 % Colors for code snippets highlights
-\definecolor{commentsColor}{RGB}{36, 161, 156}
-\definecolor{numColor}{RGB}{71, 96, 114}
+\definecolor{commentsColor}{RGB}{76, 113, 148}
+\definecolor{numColor}{RGB}{160, 175, 132}
 \definecolor{stringColor}{RGB}{205, 63, 62}
-\definecolor{kwColor}{RGB}{248, 6, 204}
-\definecolor{bgCodeColor}{RGB}{255, 249, 249}
+\definecolor{kwColor}{RGB}{71, 133, 126}
+% \definecolor{bgCodeColor}{RGB}{255, 249, 249}
 
 % Style of code snippets
 \lstdefinestyle{codeSnippet} {
@@ -550,15 +558,18 @@
 
 
 \definecolor{diffstart}{RGB}{128, 128, 128}
-\definecolor{diffincl}{RGB}{0, 128, 0}
-\definecolor{diffrem}{RGB}{255, 0, 0}
+\definecolor{diffincl}{RGB}{64, 119, 113}
+\definecolor{diffrem}{RGB}{205, 63, 62}
+% \definecolor{diffincl}{RGB}{0, 128, 0}
+% \definecolor{diffrem}{RGB}{255, 0, 0}
 
 \lstdefinelanguage{diff}{
-    basicstyle=\linespread{0.9}\ttfamily\footnotesize,
+    basicstyle=\linespread{0.95}\ttfamily\footnotesize,
     morecomment=[f][\color{diffstart}]{@@},
     morecomment=[f][\color{diffincl}]{+\ },
     morecomment=[f][\color{diffrem}]{-\ },
 }
+
 
 \definecolor{jsondelim}{RGB}{20, 142, 193}
 \definecolor{jsonnum}{RGB}{92, 51, 154}
@@ -566,7 +577,7 @@
 \definecolor{jsoncomment}{RGB}{169, 169, 169}
 
 \lstdefinelanguage{json}{
-    basicstyle=\linespread{0.9}\ttfamily\footnotesize,
+    basicstyle=\linespread{0.95}\ttfamily\footnotesize,
     numbers=left,
     numberstyle=\scriptsize,
     stepnumber=1,
@@ -601,8 +612,8 @@
 % -- FILE TREES --
 
 % Style of file trees
-\definecolor{folderbg}{RGB}{124,166,198}
-\definecolor{folderborder}{RGB}{110,144,169}
+\definecolor{folderbg}{RGB}{107, 144, 179}
+\definecolor{folderborder}{RGB}{76, 113, 148}
 
 \newlength\Size
 \setlength\Size{4pt}
