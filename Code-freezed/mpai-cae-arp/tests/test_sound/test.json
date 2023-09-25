@@ -1,0 +1,10 @@
+[
+    {
+        "NoiseType": "B",
+        "StartTime": 44.46204081632653,
+        "EndTime": 44.96204081632653,
+        "Channel": 0,
+        "Path": "data/testa/test/AudioBlocks/B_0_1960776_1982826.wav",
+        "RMSdB": -63.12695566583463
+    }
+]

@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+/**
+* This file is part of the Audio Restoration Package (ARP).
+* to compile it run:
+* 
+* protoc -I protos --python_out=mpai_cae_arp/network --grpc_python_out=mpai_cae_arp/network protos/arp.proto
+*/
+
+package arp;
+
+service AIM {
+    /*
+     * Get information about the AIM
+     */
+    rpc getInfo (InfoRequest) returns (InfoResponse) {}
+    /*
+     * A generic method to perform the AIM task
+     */
+    rpc work(JobRequest) returns (stream JobResponse) {}
+}
+
+/*
+ * Require to get information about the AIM
+ * field: the field to get information about (None to get all fields)
+ */
+message InfoRequest {
+    optional string field = 1;
+}
+
+/*
+ * The request of the AIM
+ * working_dir: the working directory of the AIM
+ * files_name: the name of the files to process
+ * index: the index of the file to process (It is used only for 
+ *  Audio and Video Analysis to specify the Irregularity File Index)
+ */
+message JobRequest {
+    string working_dir = 1;
+    string files_name = 2;
+    optional int32 index = 3;
+}
+
+/*
+ * The response of the AIM
+ * status: the status of the AIM
+ * message: the message of the AIM
+ */
+message JobResponse {
+    string status = 1;
+    string message = 2;
+}
+
+/*
+ * The information about the AIM author
+ */
+message Contact {
+    string name = 1;
+    string email = 2;
+}
+
+/* 
+ * The license of the AIM
+ */
+message License {
+    string name = 1;
+    string url = 2;
+}
+
+/*
+ * The information about the AIM
+ * title: the title of the AIM
+ * description: a brief description of the AIM
+ * version: the version of the AIM
+ * contact: how to contact the AIM author
+ * license: the license of the AIM
+ */
+message InfoResponse {
+    string title = 1;
+    string description = 2;
+    string version = 3;
+    Contact contact = 4;
+    License license = 5;
+}

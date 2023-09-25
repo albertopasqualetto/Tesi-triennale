@@ -1,0 +1,12 @@
+title: Audio Analyser
+description: |
+  [![MPAI CAE-ARP](https://img.shields.io/badge/MPAI%20CAE--ARP-gray?style=for-the-badge&logo=AppleMusic&logoColor=cyan&link=https://mpai.community/standards/mpai-cae/about-mpai-cae/)](https://mpai.community/standards/mpai-cae/about-mpai-cae/)
+
+  Implements the Technical Specification of [MPAI CAE-ARP](https://mpai.community/standards/mpai-cae/about-mpai-cae/#Figure2) *Audio Analyser* AIM, providing:
+version: 1.0.0
+contact:
+  name: Matteo Spanio
+  email: dev2@audioinnova.com
+license_info:
+  name: GNU General Public License v3.0
+  url: https://www.gnu.org/licenses/gpl-3.0.en.html

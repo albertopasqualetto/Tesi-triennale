@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "packager"
+version = "1.1.0"
+description = "MPAI CAE-ARP Packager."
+authors = [
+    "Matteo Spanio <dev2@audioinnova.com>",
+    "Nadir Dalla Pozza <nadir.dallapozza@unipd.it>"
+    ]
+license = "GPLv3"
+repository = "https://gitlab.dei.unipd.it/mpai/packager.git"
+readme = "README.md"
+packages = [{ include = "packager", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+mpai-cae-arp = "^0.5.0"
+rich = "^13.3.4"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.0"
+pytest-xdist = "^3.2.1"
+pytest-json-report = "^1.5.0"
+pyacoustid = "^1.3.0"
+
+[tool.poetry.scripts]
+packager = 'packager.cli:main'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]   # overridden by pytest.ini files
+minversion = "6.0"
+addopts = "-ra -q -W error::RuntimeWarning --import-mode=importlib"
+testpaths = ["conformance_tests"]
+pythonpath = ["src", "packager", "conformance_tests"]

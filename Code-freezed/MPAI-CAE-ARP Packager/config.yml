@@ -1,0 +1,23 @@
+title: Packager
+description: |
+  [![MPAI CAE-ARP](https://img.shields.io/badge/MPAI%20CAE--ARP-gray?style=for-the-badge&logo=AppleMusic&logoColor=cyan&link=https://mpai.community/standards/mpai-cae/about-mpai-cae/)](https://mpai.community/standards/mpai-cae/about-mpai-cae/)
+
+  Implements the Technical Specification of [MPAI CAE-ARP](https://mpai.community/standards/mpai-cae/about-mpai-cae/#Figure2) *Packager* AIM, providing:
+  * Access Copy Files:
+    1. Restored Audio Files;
+    2. Editing List;
+    3. Set of Irregularity Images in a .zip file;
+    4. Irregularity File.
+  * Preservation Master Files:
+    1. Preservation Audio File;
+    2. Preservation Audio-Visual File where the audio has been replaced with the Audio of the Preservation Audio File
+      fully synchronised with the video;
+    3. Set of Irregularity Images in a .zip file;
+    4. Irregularity File.
+version: "1.0.1"
+contact:
+  name: Nadir Dalla Pozza
+  email: nadir.dallapozza@unipd.it
+license_info:
+  name: GNU General Public License v3.0
+  url: https://www.gnu.org/licenses/gpl-3.0.en.html
